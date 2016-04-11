@@ -111,7 +111,7 @@ const mapHelper = {
   xGrids: {},
   yGrids: {},
 };
-const defaultInputStart = 'RAZCMD';
+const defaultInputStart = 'MEDCMD';
 const commandHelper = {
   maxSteps: 0,
   onStep: 0,
@@ -139,7 +139,7 @@ let audioCtx;
 let oscillator;
 let gainNode;
 let soundTimeout = 0;
-let previousCommandPointer;
+// let previousCommandPointer;
 let watchId = null;
 // Is geolocation tracking on?
 let isTracking = true;
@@ -747,11 +747,11 @@ function enterRoom(roomName) {
   });
 }
 
-function resetPreviousCommandPointer() {
-  const commandHistory = getCommandHistory();
-
-  previousCommandPointer = commandHistory ? commandHistory.length : 0;
-}
+// function resetPreviousCommandPointer() {
+//   const commandHistory = getCommandHistory();
+//
+//   previousCommandPointer = commandHistory ? commandHistory.length : 0;
+// }
 
 function setGain(value) {
   gainNode.gain.value = value;
@@ -1106,93 +1106,93 @@ function combineSequences(commandName, phrases) {
   return aliases[commandName] ? aliases[commandName].concat(phrases.slice(1)) : phrases.slice(1);
 }
 
-function expandPartialMatch(matchedCommands, partialMatch, sign) {
-  const firstCommand = matchedCommands[0];
-  let expanded = '';
-  let matched = true;
+// function expandPartialMatch(matchedCommands, partialMatch, sign) {
+//   const firstCommand = matchedCommands[0];
+//   let expanded = '';
+//   let matched = true;
+//
+//   for (let i = partialMatch.length; i < firstCommand.length; i++) {
+//     const commandChar = firstCommand.charAt(i);
+//
+//     for (let j = 0; j < matchedCommands.length; j++) {
+//       if (matchedCommands[j].charAt(i) !== commandChar) {
+//         matched = false;
+//
+//         break;
+//       }
+//     }
+//
+//     if (matched) {
+//       expanded += commandChar;
+//     } else {
+//       return commandChars.indexOf(sign) >= 0 ? sign + partialMatch + expanded : partialMatch + expanded;
+//     }
+//   }
+// }
 
-  for (let i = partialMatch.length; i < firstCommand.length; i++) {
-    const commandChar = firstCommand.charAt(i);
-
-    for (let j = 0; j < matchedCommands.length; j++) {
-      if (matchedCommands[j].charAt(i) !== commandChar) {
-        matched = false;
-
-        break;
-      }
-    }
-
-    if (matched) {
-      expanded += commandChar;
-    } else {
-      return commandChars.indexOf(sign) >= 0 ? sign + partialMatch + expanded : partialMatch + expanded;
-    }
-  }
-}
-
-function autoCompleteCommand() {
-  const phrases = trimSpace(getInputText().toLowerCase()).split(' ');
-  // TODO Change from Object.keys for compatibility with older Android
-  const allCommands = Object.keys(commands).concat(Object.keys(getAliases()));
-  const matched = [];
-  const sign = phrases[0].charAt(0);
-  let newText = '';
-  let matches;
-  let partialCommand = phrases[0];
-
-  /**
-   * Auto-complete should only trigger when one phrase is in the input
-   * It will not auto-complete flags
-   * If chat mode and the command is prepended or normal mode
-   */
-  if (phrases.length === 1 && partialCommand.length > 0 && (commandChars.indexOf(sign) >= 0 || (cmdMode === getMode()) || getUser() === null)) {
-    // Removes prepend sign
-    if (commandChars.indexOf(sign) >= 0) {
-      partialCommand = partialCommand.slice(1);
-    }
-
-    for (let i = 0; i < allCommands.length; i++) {
-      matches = false;
-
-      for (let j = 0; j < partialCommand.length; j++) {
-        const commandAccesssLevel = getCommandAccessLevel(allCommands[i]);
-        const commandVisibility = getCommandVisibility(allCommands[i]);
-
-        if ((isNaN(commandAccesssLevel) || getAccessLevel() >= commandAccesssLevel) && getAccessLevel() >= commandVisibility && partialCommand.charAt(j) === allCommands[i].charAt(j)) {
-          matches = true;
-        } else {
-          matches = false;
-
-          break;
-        }
-      }
-
-      if (matches) {
-        matched.push(allCommands[i]);
-      }
-    }
-
-    if (matched.length === 1) {
-      const commandIndex = commandChars.indexOf(sign);
-
-      if (commandIndex >= 0) {
-        newText += commandChars[commandIndex];
-      }
-
-      newText += `${matched[0]} `;
-
-      clearInput();
-      setCommandInput(newText);
-    } else if (matched.length > 0) {
-      setCommandInput(expandPartialMatch(matched, partialCommand, sign));
-      queueMessage({ text: [matched.join('\t')] });
-    }
-
-    // No input? Show all available commands
-  } else if (partialCommand.length === 0) {
-    commands.help.func();
-  }
-}
+// function autoCompleteCommand() {
+//   const phrases = trimSpace(getInputText().toLowerCase()).split(' ');
+//   // TODO Change from Object.keys for compatibility with older Android
+//   const allCommands = Object.keys(commands).concat(Object.keys(getAliases()));
+//   const matched = [];
+//   const sign = phrases[0].charAt(0);
+//   let newText = '';
+//   let matches;
+//   let partialCommand = phrases[0];
+//
+//   /**
+//    * Auto-complete should only trigger when one phrase is in the input
+//    * It will not auto-complete flags
+//    * If chat mode and the command is prepended or normal mode
+//    */
+//   if (phrases.length === 1 && partialCommand.length > 0 && (commandChars.indexOf(sign) >= 0 || (cmdMode === getMode()) || getUser() === null)) {
+//     // Removes prepend sign
+//     if (commandChars.indexOf(sign) >= 0) {
+//       partialCommand = partialCommand.slice(1);
+//     }
+//
+//     for (let i = 0; i < allCommands.length; i++) {
+//       matches = false;
+//
+//       for (let j = 0; j < partialCommand.length; j++) {
+//         const commandAccesssLevel = getCommandAccessLevel(allCommands[i]);
+//         const commandVisibility = getCommandVisibility(allCommands[i]);
+//
+//         if ((isNaN(commandAccesssLevel) || getAccessLevel() >= commandAccesssLevel) && getAccessLevel() >= commandVisibility && partialCommand.charAt(j) === allCommands[i].charAt(j)) {
+//           matches = true;
+//         } else {
+//           matches = false;
+//
+//           break;
+//         }
+//       }
+//
+//       if (matches) {
+//         matched.push(allCommands[i]);
+//       }
+//     }
+//
+//     if (matched.length === 1) {
+//       const commandIndex = commandChars.indexOf(sign);
+//
+//       if (commandIndex >= 0) {
+//         newText += commandChars[commandIndex];
+//       }
+//
+//       newText += `${matched[0]} `;
+//
+//       clearInput();
+//       setCommandInput(newText);
+//     } else if (matched.length > 0) {
+//       setCommandInput(expandPartialMatch(matched, partialCommand, sign));
+//       queueMessage({ text: [matched.join('\t')] });
+//     }
+//
+//     // No input? Show all available commands
+//   } else if (partialCommand.length === 0) {
+//     commands.help.func();
+//   }
+// }
 
 function printHelpMessage(command) {
   const helpMsg = { text: [] };
@@ -1378,14 +1378,14 @@ function enterKeyHandler() {
     }
   }
 
-  resetPreviousCommandPointer();
+  // resetPreviousCommandPointer();
   clearInput();
   clearModeText();
 }
 
 function specialKeyPress(event) {
   const keyCode = typeof event.which === 'number' ? event.which : event.keyCode;
-  const commandHistory = getCommandHistory();
+  // const commandHistory = getCommandHistory();
 
   if (!keyPressed) {
     switch (keyCode) {
@@ -1401,36 +1401,36 @@ function specialKeyPress(event) {
 
     // Tab
     case 9:
-      const phrases = getInputText().split(' ');
-
-      keyPressed = true;
-
-      if (!commandHelper.keysBlocked && commandHelper.command === null && phrases.length === 1) {
-        autoCompleteCommand();
-        changeModeText();
-      } else if (commandHelper.allowAutoComplete || phrases.length === 2) {
-        const command = commands[commandHelper.command] || retrieveCommand(phrases[0]).command;
-        const partial = commandHelper.command ? phrases[0] : phrases[1];
-
-        if (command && command.autocomplete) {
-          switch (command.autocomplete.type) {
-          case 'users':
-            socket.emit('matchPartialUser', { partialName: partial });
-
-            break;
-          case 'rooms':
-            socket.emit('matchPartialRoom', { partialName: partial });
-
-            break;
-          case 'myRooms':
-            socket.emit('matchPartialMyRoom', { partialName: partial });
-
-            break;
-          default:
-            break;
-          }
-        }
-      }
+      // const phrases = getInputText().split(' ');
+      //
+      // keyPressed = true;
+      //
+      // if (!commandHelper.keysBlocked && commandHelper.command === null && phrases.length === 1) {
+      //   autoCompleteCommand();
+      //   changeModeText();
+      // } else if (commandHelper.allowAutoComplete || phrases.length === 2) {
+      //   const command = commands[commandHelper.command] || retrieveCommand(phrases[0]).command;
+      //   const partial = commandHelper.command ? phrases[0] : phrases[1];
+      //
+      //   if (command && command.autocomplete) {
+      //     switch (command.autocomplete.type) {
+      //     case 'users':
+      //       socket.emit('matchPartialUser', { partialName: partial });
+      //
+      //       break;
+      //     case 'rooms':
+      //       socket.emit('matchPartialRoom', { partialName: partial });
+      //
+      //       break;
+      //     case 'myRooms':
+      //       socket.emit('matchPartialMyRoom', { partialName: partial });
+      //
+      //       break;
+      //     default:
+      //       break;
+      //     }
+      //   }
+      // }
 
       event.preventDefault();
 
@@ -1444,27 +1444,27 @@ function specialKeyPress(event) {
       break;
     // Ctrl
     case 17:
-      triggerKeysPressed.ctrl = true;
+      // triggerKeysPressed.ctrl = true;
 
       break;
     // Alt
     case 18:
-      triggerKeysPressed.alt = true;
+      // triggerKeysPressed.alt = true;
 
       break;
     // Left Command key in OS X
     case 91:
-      triggerKeysPressed.ctrl = true;
+      // triggerKeysPressed.ctrl = true;
 
       break;
     // Right Command key in OS X
     case 93:
-      triggerKeysPressed.ctrl = true;
+      // triggerKeysPressed.ctrl = true;
 
       break;
     // Command key in OS X (Firefox)
     case 224:
-      triggerKeysPressed.ctrl = true;
+      // triggerKeysPressed.ctrl = true;
 
       break;
     // Delete
@@ -1494,43 +1494,43 @@ function specialKeyPress(event) {
       break;
     // Up arrow
     case 38:
-      keyPressed = true;
-
-      if (triggerKeysPressed.ctrl) {
-        window.scrollBy(0, -window.innerHeight);
-      } else {
-        if (!commandHelper.keysBlocked && commandHelper.command === null) {
-          if (previousCommandPointer > 0) {
-            clearInput();
-            previousCommandPointer--;
-            setCommandInput(commandHistory[previousCommandPointer]);
-          }
-        }
-      }
+      // keyPressed = true;
+      //
+      // if (triggerKeysPressed.ctrl) {
+      //   window.scrollBy(0, -window.innerHeight);
+      // } else {
+      //   if (!commandHelper.keysBlocked && commandHelper.command === null) {
+      //     if (previousCommandPointer > 0) {
+      //       clearInput();
+      //       previousCommandPointer--;
+      //       setCommandInput(commandHistory[previousCommandPointer]);
+      //     }
+      //   }
+      // }
 
       event.preventDefault();
 
       break;
     // Down arrow
     case 40:
-      keyPressed = true;
-
-      if (triggerKeysPressed.ctrl) {
-        window.scrollBy(0, window.innerHeight);
-      } else {
-        if (!commandHelper.keysBlocked && commandHelper.command === null) {
-          if (previousCommandPointer < commandHistory.length - 1) {
-            clearInput();
-            previousCommandPointer++;
-            setCommandInput(commandHistory[previousCommandPointer]);
-          } else if (previousCommandPointer === commandHistory.length - 1) {
-            clearInput();
-            previousCommandPointer++;
-          } else {
-            clearInput();
-          }
-        }
-      }
+      // keyPressed = true;
+      //
+      // if (triggerKeysPressed.ctrl) {
+      //   window.scrollBy(0, window.innerHeight);
+      // } else {
+      //   if (!commandHelper.keysBlocked && commandHelper.command === null) {
+      //     if (previousCommandPointer < commandHistory.length - 1) {
+      //       clearInput();
+      //       previousCommandPointer++;
+      //       setCommandInput(commandHistory[previousCommandPointer]);
+      //     } else if (previousCommandPointer === commandHistory.length - 1) {
+      //       clearInput();
+      //       previousCommandPointer++;
+      //     } else {
+      //       clearInput();
+      //     }
+      //   }
+      // }
 
       event.preventDefault();
 
@@ -1549,7 +1549,7 @@ function defaultKeyPress(textChar, event) {
   }
 
   if (triggerAutoComplete(getInputText(), textChar) && commandHelper.command === null) {
-    autoCompleteCommand();
+    // autoCompleteCommand();
     // Prevent new whitespace to be printed
     event.preventDefault();
   }
@@ -1561,16 +1561,16 @@ function keyPress(event) {
 
   if (!keyPressed) {
     switch (keyCode) {
-    case 102:
-      if (triggerKeysPressed.ctrl) {
-        goFullScreen(document.documentElement);
-        fullscreenResize(false);
-        event.preventDefault();
-      } else {
-        defaultKeyPress(textChar, event);
-      }
-
-      break;
+    // case 102:
+    //   if (triggerKeysPressed.ctrl) {
+    //     goFullScreen(document.documentElement);
+    //     fullscreenResize(false);
+    //     event.preventDefault();
+    //   } else {
+    //     defaultKeyPress(textChar, event);
+    //   }
+    //
+    //   break;
     default:
       defaultKeyPress(textChar, event);
 
@@ -1605,26 +1605,50 @@ function createMenuItem(menuItem) {
   return listItem;
 }
 
+function getDemonSpeech() {
+  return getLocalVal('demon') === 'true';
+}
+
+function demonSpeechOn() {
+  setLocalVal('demon', true);
+  menuList.classList.add('demonBack');
+}
+
+function demonSpeechOff() {
+  setLocalVal('demon', false);
+  menuList.classList.remove('demonBack');
+}
+
 function populateMenu() {
   const menuItems = {
-    runCommand: {
-      itemName: 'EXEC',
+    // runCommand: {
+    //   itemName: 'EXEC',
+    //   extraClass: 'menuButton',
+    //   func: enterKeyHandler,
+    // },
+    // commands: {
+    //   itemName: 'CMDS',
+    //   func: commands.help.func,
+    // },
+    // users: {
+    //   itemName: 'USERS',
+    //   func: commands.list.func,
+    //   funcParam: 'users',
+    // },
+    // rooms: {
+    //   itemName: 'ROOMS',
+    //   func: commands.list.func,
+    //   funcParam: 'rooms',
+    // },
+    demon: {
+      itemName: 'Demon',
       extraClass: 'menuButton',
-      func: enterKeyHandler,
+      func: demonSpeechOn,
     },
-    commands: {
-      itemName: 'CMDS',
-      func: commands.help.func,
-    },
-    users: {
-      itemName: 'USERS',
-      func: commands.list.func,
-      funcParam: 'users',
-    },
-    rooms: {
-      itemName: 'ROOMS',
-      func: commands.list.func,
-      funcParam: 'rooms',
+    normal: {
+      itemName: 'Normal',
+      extraClass: 'menuButton',
+      func: demonSpeechOff,
     },
   };
 
@@ -1637,6 +1661,10 @@ function populateMenu() {
 
     attachMenuListener(listItem, menuItem.func, menuItem.funcParam);
     menuList.appendChild(listItem);
+  }
+
+  if (getDemonSpeech()) {
+    demonSpeechOn();
   }
 }
 
@@ -1655,12 +1683,12 @@ function createCommandEnd() {
 function printWelcomeMessage() {
   if (!fastMode) {
     const mainLogo = copyMessage(storedMessages.mainLogo);
-    const razorLogo = copyMessage(storedMessages.razor);
+    // const razorLogo = copyMessage(storedMessages.razor);
 
     queueMessage(mainLogo);
     queueMessage({ text: labels.retrieveMessage(appendLanguage('info'), 'welcomeLoggedIn') });
-    queueMessage({ text: labels.retrieveMessage(appendLanguage('info'), 'razorHacked') });
-    queueMessage(razorLogo);
+    // queueMessage({ text: labels.retrieveMessage(appendLanguage('info'), 'razorHacked') });
+    // queueMessage(razorLogo);
   }
 }
 
@@ -1669,11 +1697,25 @@ function printStartMessage() {
     const mainLogo = copyMessage(storedMessages.mainLogo);
 
     queueMessage(mainLogo);
-    queueMessage({
-      text: labels.retrieveMessage(appendLanguage('info'), 'establishConnection'),
-      extraClass: 'upperCase',
-    });
+    // queueMessage({
+    //   text: labels.retrieveMessage(appendLanguage('info'), 'establishConnection'),
+    //   extraClass: 'upperCase',
+    // });
     queueMessage({ text: labels.retrieveMessage(appendLanguage('info'), 'welcome') });
+    queueMessage({
+      text: [
+        'Frihet',
+        'Trygghet',
+        'Livskvalitet',
+      ],
+      subText: [
+        'Fͬ͊́͏̛̩̮å̸͙̮̰̥̘̝͇̉͛͊̉̾n̨̨̫̜̏͗ǧͪ͗̂́̆͗̚͏̛̠̼̳͕͔̜͓͡e̵̸̹̬̽',
+        'B̡̗̰͆̆̈́͟e͗̓ͦͥͯ̄̊͏̙̹͓̻̫̻͓͠ṛ̭͖̯̜͍̣̼̥̉͒͆̍ͩ͌ͧ̈ó̢̢̗̰̤̙͎̰͑̈́ͯ̋̃͋̈̈ḙ̛̝͕̱͚͌͛ͨ̎͗̈́̇̈̉ͅņ͔͈̥̻̥̈́̍́d̘̯͍͚͖̞̏ͫ̊͡e̳̠̤͓ͩ̔͆̎͋',
+        'O̸̾̓̀ͧ̉̚̕͏̬f̻̯̭̟͖̺̙͚̩ͩͬ̈́ͫ̽̐̕f̸̧͖̙͓̜̝͚̬̃ͭ̔͡e̵̒̐ͭ͏̮̹͉̤r̢̝̻͈̞̤ͣ͐̅͋ͮ',
+      ],
+      extraClass: 'upperCase',
+      msgAnimation: {},
+    });
   }
 }
 
@@ -1684,7 +1726,8 @@ function attachFullscreenListener() {
     if (clicked) {
       cmdInput.focus();
     } else {
-      cmdInput.blur();
+      // cmdInput.blur();
+      cmdInput.focus();
     }
 
     if (getForceFullscreen() === true) {
@@ -1703,7 +1746,7 @@ function resetAllLocalVals() {
   removeUser();
   setAccessLevel(0);
   setInputStart(defaultInputStart);
-  previousCommandPointer = 0;
+  // previousCommandPointer = 0;
 }
 
 function hideMessageProperties(message = { }) {
@@ -2334,13 +2377,27 @@ function attachCommands() {
       if (phrases && phrases.length > 0) {
         writtenMsg = phrases.join(' ');
 
-        socket.emit('chatMsg', {
-          message: {
-            text: [writtenMsg],
-            userName: getUser(),
-            roomName: getRoom(),
-          },
-        });
+        if (getDemonSpeech()) {
+          socket.emit('chatMsg', {
+            message: {
+              text: [writtenMsg],
+              subText: ['o̱̜̣͍̼̭̗̐͝ͅg̪ͩ͋̋̀̂͜͝l̋ͬ̾̉ͣͥ̂҉͓̥̗̻͈a̢̝̓ͦ̊z̭̻̠͈̫̱̼ͣ̐̊̎ͣ͗̅̔̚o̸̶̜̺͍̲̺͙ͨ̓͜g̪̓ͪ̀͊ͭ͂l̴̷͍͈̦ͪ̐å͉̥̦ͦ̅͢ż̧̠͇̫̠̱ͮ́̃̏͢z̖̟̺̙̝̥̗̟̤̏̅̾̃̓͘a̗̙̠͈̓̑͗̑͛̈́r̴͈̹̤͓̦͈̹͑͛́a͖̜̬̮̩̐̅ͥͨ́͡t̵̸͈̮̬̺̙̟̺̭̰͒̉͛a͉͎͑̐́̓̽ͧ͜͡͞z̧̙̼̻͉͕̻̘̦ͬ̾̐͡ȁ̡̡̛̲̙̰̃̃́̀t̛̠̟̯͖͛͆͌͗̓̄͌̂ã̵̢̢̻̜̭̪̲̬̒ͅr͗̈͛ͫ̆̃̏͏̸̛̙̖a͔̙̝̟̘̯̭̦ͧͮͨͧ̽̔z̼̰̖̫̙̊̐̕'],
+              userName: getUser(),
+              roomName: getRoom(),
+              msgAnimation: {
+                instantAnimation: true,
+              },
+            },
+          });
+        } else {
+          socket.emit('chatMsg', {
+            message: {
+              text: [writtenMsg],
+              userName: getUser(),
+              roomName: getRoom(),
+            },
+          });
+        }
       } else {
         queueMessage({
           text: ['You forgot to type the message!'],
@@ -2514,24 +2571,24 @@ function attachCommands() {
           setMode(newMode);
 
           if (verbose === undefined || verbose) {
-            commandString = 'Chat mode activated';
+            // commandString = 'Chat mode activated';
 
-            queueMessage({
-              text: createCommandStart(commandString).concat([
-                `Prepend commands with ${commandChars.join(' or ')}, example: ${commandChars[0]}mode`,
-                'Everything else written and sent will be intepreted as a chat message',
-                'You will no longer need to use msg command to type chat messages',
-                'Use tab or type double space to see available commands and instructions',
-                createCommandEnd(commandString.length),
-              ]),
-              text_se: createCommandStart(commandString).concat([
-                `Lägg till ${commandChars.join(' eller ')} i början av varje kommando, exempel: ${commandChars[0]}mode`,
-                'Allt annat ni skriver kommer att tolkas som chatmeddelanden',
-                'Ni kommer inte längre behöva använda msg-kommandot för att skriva chatmeddelanden',
-                'Använd tab-knappen eller skriv in två blanksteg för att se tillgängliga kommandon och instruktioner',
-                createCommandEnd(commandString.length),
-              ]),
-            });
+            // queueMessage({
+            //   text: createCommandStart(commandString).concat([
+            //     `Prepend commands with ${commandChars.join(' or ')}, example: ${commandChars[0]}mode`,
+            //     'Everything else written and sent will be intepreted as a chat message',
+            //     'You will no longer need to use msg command to type chat messages',
+            //     'Use tab or type double space to see available commands and instructions',
+            //     createCommandEnd(commandString.length),
+            //   ]),
+            //   text_se: createCommandStart(commandString).concat([
+            //     `Lägg till ${commandChars.join(' eller ')} i början av varje kommando, exempel: ${commandChars[0]}mode`,
+            //     'Allt annat ni skriver kommer att tolkas som chatmeddelanden',
+            //     'Ni kommer inte längre behöva använda msg-kommandot för att skriva chatmeddelanden',
+            //     'Använd tab-knappen eller skriv in två blanksteg för att se tillgängliga kommandon och instruktioner',
+            //     createCommandEnd(commandString.length),
+            //   ]),
+            // });
           }
 
           socket.emit('updateMode', { mode: newMode });
@@ -2539,20 +2596,20 @@ function attachCommands() {
           setMode(newMode);
 
           if (verbose === undefined || verbose) {
-            commandString = 'Command mode activated';
-
-            queueMessage({
-              text: createCommandStart(commandString).concat([
-                `Commands can be used without ${commandChars[0]}`,
-                'You have to use command msg to send messages',
-                createCommandEnd(commandString.length),
-              ]),
-              text_se: createCommandStart(commandString).concat([
-                `Kommandon kan användas utan ${commandChars[0]}`,
-                'Ni måste använda msg-kommandot för att skriva chatmeddelanden',
-                createCommandEnd(commandString.length),
-              ]),
-            });
+            // commandString = 'Command mode activated';
+            //
+            // queueMessage({
+            //   text: createCommandStart(commandString).concat([
+            //     `Commands can be used without ${commandChars[0]}`,
+            //     'You have to use command msg to send messages',
+            //     createCommandEnd(commandString.length),
+            //   ]),
+            //   text_se: createCommandStart(commandString).concat([
+            //     `Kommandon kan användas utan ${commandChars[0]}`,
+            //     'Ni måste använda msg-kommandot för att skriva chatmeddelanden',
+            //     createCommandEnd(commandString.length),
+            //   ]),
+            // });
           }
 
           socket.emit('updateMode', { mode: newMode });
@@ -3890,7 +3947,7 @@ function startBoot() {
   addEventListener('keyup', keyReleased);
   window.addEventListener('focus', refocus);
 
-  resetPreviousCommandPointer();
+  // resetPreviousCommandPointer();
   generateMap();
   setIntervals();
   startAudio();

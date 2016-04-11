@@ -1,11 +1,11 @@
-$text-color: #00ffcc;
-$shadow-color: #008766;
-$back-color: #001e15;
+$text-color: #fdfffb;
+$shadow-color: #858587;
+$back-color: #1e1d1e;
 $sub-text-color: #ff0026;
 $sub-shadow-color: #870016;
 $sub-back-color: #1e0100;
-$imp-text-color: #002d25;
-$imp-back-color: #00ffcc;
+$imp-text-color: #2c2d2c;
+$imp-back-color: #fdfffb;
 
 html {
   -webkit-touch-callout: none;
@@ -199,6 +199,7 @@ pre {
 
 .subliminalInstant:before {
   @extend .baseSubliminalBefore;
+  content: "o̱̜̣͍̼̭̗̐͝ͅg̪ͩ͋̋̀̂͜͝l̋ͬ̾̉ͣͥ̂҉͓̥̗̻͈a̢̝̓ͦ̊z̭̻̠͈̫̱̼ͣ̐̊̎ͣ͗̅̔̚o̸̶̜̺͍̲̺͙ͨ̓͜g̪̓ͪ̀͊ͭ͂l̴̷͍͈̦ͪ̐å͉̥̦ͦ̅͢ż̧̠͇̫̠̱ͮ́̃̏͢z̖̟̺̙̝̥̗̟̤̏̅̾̃̓͘a̗̙̠͈̓̑͗̑͛̈́r̴͈̹̤͓̦͈̹͑͛́a͖̜̬̮̩̐̅ͥͨ́͡t̵̸͈̮̬̺̙̟̺̭̰͒̉͛a͉͎͑̐́̓̽ͧ͜͡͞z̧̙̼̻͉͕̻̘̦ͬ̾̐͡ȁ̡̡̛̲̙̰̃̃́̀t̛̠̟̯͖͛͆͌͗̓̄͌̂ã̵̢̢̻̜̭̪̲̬̒ͅr͗̈͛ͫ̆̃̏͏̸̛̙̖a͔̙̝̟̘̯̭̦ͧͮͨͧ̽̔z̼̰̖̫̙̊̐̕";
   opacity: 1;
   -webkit-animation: instantBrightness 1s linear 1;
   -webkit-animation-fill-mode: forwards;
@@ -281,6 +282,10 @@ pre {
   padding: 0 .2em 0 .2em;
   border-left: 2px solid;
   border-right: 2px solid;
+}
+
+.demonBack {
+  background-color: $sub-shadow-color;
 }
 
 .hideCursor {
