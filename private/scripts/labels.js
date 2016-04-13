@@ -898,11 +898,13 @@ const all = {
       'eller login myname',
     ],
     welcomeLoggedIn: [
-      `Välkommen, uppdragstagare ${userName}`,
-      'Visste ni att ni kan autoifylla kommandon genom att trycka på tab-knappen eller skriva in två mellanslag i rad?',
-      'Ni kan också trycka på tab-knappen eller skriva in tvåmellanslag i rad för att få fram instruktioner',
-      'Lär dig denna värdefulla teknik för att öka din produktivitet!',
-      'Ha en produktiv dag',
+      ' Din väg till Staten',
+      ' Din portal till helvetet',
+      ' Dina ledstjärnor för ett bättre själv',
+      ' Ditt bidrag till ett bättre Sverige',
+      textTools.createLine(39),
+      '|           Medborgarbyrån            |',
+      textTools.createLine(39),
     ],
     razorHacked: ['## Denna terminal låstes upp av er vänliga Razor-grupp. Ha så kul! ##'],
     // welcome: [

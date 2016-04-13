@@ -2561,7 +2561,7 @@ function attachCommands() {
   };
   commands.mode = {
     func: function modeCommand(phrases, verbose) {
-      let commandString;
+      // let commandString;
 
       if (phrases.length > 0) {
         const newMode = phrases[0].toLowerCase();
