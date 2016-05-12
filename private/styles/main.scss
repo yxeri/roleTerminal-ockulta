@@ -21,7 +21,7 @@ body {
   margin: 0;
   background-color: $back-color;
   color: $text-color;
-  text-shadow: 1px 1px 4px $shadow-color;
+  text-shadow: 1px 1px 3px $shadow-color;
   font-family: monospace;
   font-size: 1.2em;
   letter-spacing: .05em;
@@ -150,7 +150,7 @@ pre {
   width: 100%;
   background-color: $sub-back-color;
   color: $sub-text-color;
-  text-shadow: 1px 1px 4px $sub-shadow-color;
+  text-shadow: 1px 1px 3px $sub-shadow-color;
   opacity: 0;
 }
 
@@ -160,8 +160,8 @@ pre {
 
 .subliminal:before {
   @extend .baseSubliminalBefore;
-  -webkit-animation: brightness 16s linear infinite 6s;
-  animation: brightness 16s linear infinite 6s;
+  -webkit-animation: brightness 46s linear infinite 6s;
+  animation: brightness 46s linear infinite 6s;
 }
 
 .subliminalFast {
@@ -170,8 +170,8 @@ pre {
 
 .subliminalFast:before {
   @extend .baseSubliminalBefore;
-  -webkit-animation: brightness 14s linear infinite 4s;
-  animation: brightness 14s linear infinite 4s;
+  -webkit-animation: brightness 34s linear infinite 4s;
+  animation: brightness 34s linear infinite 4s;
 }
 
 .subliminalSlow {
@@ -180,8 +180,8 @@ pre {
 
 .subliminalSlow:before {
   @extend .baseSubliminalBefore;
-  -webkit-animation: brightness 18s linear infinite 8s;
-  animation: brightness 18s linear infinite 8s;
+  -webkit-animation: brightness 58s linear infinite 8s;
+  animation: brightness 58s linear infinite 8s;
 }
 
 .subliminalInstant {
@@ -347,10 +347,10 @@ pre {
   1% {
     opacity: 1;
   }
-  3% {
+  1.1% {
     opacity: 1;
   }
-  4% {
+  1.2% {
     opacity: 0;
   }
 }
@@ -362,10 +362,10 @@ pre {
   1% {
     opacity: 1;
   }
-  3% {
+  1.2% {
     opacity: 1;
   }
-  4% {
+  1.3% {
     opacity: 0;
   }
 }

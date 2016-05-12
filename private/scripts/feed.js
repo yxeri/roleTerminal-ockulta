@@ -55,42 +55,42 @@ const dash = '-';
 const morseSeparator = '#';
 // TODO Convert to arrays with amounts pointing to either - or .
 const morseCodes = {
-  'a': '.-',
-  'b': '-...',
-  'c': '-.-.',
-  'd': '-..',
-  'e': '.',
-  'f': '..-.',
-  'g': '--.',
-  'h': '....',
-  'i': '..',
-  'j': '.---',
-  'k': '-.-',
-  'l': '.-..',
-  'm': '--',
-  'n': '-.',
-  'o': '---',
-  'p': '.--.',
-  'q': '--.-',
-  'r': '.-.',
-  's': '...',
-  't': '-',
-  'u': '..-',
-  'v': '...-',
-  'w': '.--',
-  'x': '-..-',
-  'y': '-.--',
-  'z': '--..',
-  '1': '.----',
-  '2': '..---',
-  '3': '...--',
-  '4': '....-',
-  '5': '.....',
-  '6': '-....',
-  '7': '--...',
-  '8': '---..',
-  '9': '----.',
-  '0': '-----',
+  a: '.-',
+  b: '-...',
+  c: '-.-.',
+  d: '-..',
+  e: '.',
+  f: '..-.',
+  g: '--.',
+  h: '....',
+  i: '..',
+  j: '.---',
+  k: '-.-',
+  l: '.-..',
+  m: '--',
+  n: '-.',
+  o: '---',
+  p: '.--.',
+  q: '--.-',
+  r: '.-.',
+  s: '...',
+  t: '-',
+  u: '..-',
+  v: '...-',
+  w: '.--',
+  x: '-..-',
+  y: '-.--',
+  z: '--..',
+  1: '.----',
+  2: '..---',
+  3: '...--',
+  4: '....-',
+  5: '.....',
+  6: '-....',
+  7: '--...',
+  8: '---..',
+  9: '----.',
+  0: '-----',
   // Symbolizes space betwen words
   '#': morseSeparator,
 };
@@ -135,6 +135,9 @@ const animations = [
 let animationPosition = 0;
 // Will skip some flavour text and make print out happen faster, if true
 let fastMode = false;
+let disableCommands = false;
+let hideRoomNames = false;
+let hideTimeStamp = false;
 let audioCtx;
 let oscillator;
 let gainNode;
@@ -220,7 +223,7 @@ function replaceLastInputPhrase(text) {
 }
 
 function beautifyNumb(number) {
-  return number > 9 ? number : '0' + number;
+  return number > 9 ? number : `0${number}`;
 }
 
 function generateSpan(params = { text: '' }) {
@@ -234,8 +237,7 @@ function generateSpan(params = { text: '' }) {
   // TODO Refactor this and generateLink()
   if (linkable) {
     spanObj.classList.add('link');
-
-    spanObj.addEventListener('click', function spanClick(event) {
+    spanObj.addEventListener('click', (event) => {
       clicked = true;
 
 
@@ -251,7 +253,6 @@ function generateSpan(params = { text: '' }) {
       event.stopPropagation();
     });
   }
-
   spanObj.appendChild(document.createTextNode(text));
 
   if (className) {
@@ -264,8 +265,8 @@ function generateSpan(params = { text: '' }) {
 // TODO Refactor this and if case for linkable in generateSpan()
 function generateLink(text, className, func) {
   const spanObj = generateSpan({
-    text: text,
-    className: className,
+    text,
+    className,
   });
   spanObj.classList.add('link');
 
@@ -293,17 +294,17 @@ function generateTimeStamp(date, full, year) {
 
   const mins = beautifyNumb(newDate.getMinutes());
   const hours = beautifyNumb(newDate.getHours());
-  timeStamp = hours + ':' + mins;
+  timeStamp = `${hours}:${mins}`;
 
   if (full) {
     const month = beautifyNumb(newDate.getMonth());
     const day = beautifyNumb(newDate.getDate());
-    timeStamp = day + '/' + month + ' ' + timeStamp;
+    timeStamp = `${day}/${month} ${timeStamp}`;
   }
 
   if (year) {
     const fullYear = newDate.getFullYear();
-    timeStamp = fullYear + ' ' + timeStamp;
+    timeStamp = `${fullYear} ${timeStamp}`;
   }
 
   return timeStamp;
@@ -354,14 +355,14 @@ function createRow(message, subText) {
     }
   }
 
-  if (message.time && !message.skipTime) {
+  if (!hideTimeStamp && message.time && !message.skipTime) {
     rowObj.appendChild(generateSpan({
       text: generateTimeStamp(message.time),
       extraClass: 'timestamp',
     }));
   }
 
-  if (roomName && hideRooms.indexOf(roomName.toLowerCase()) === -1) {
+  if (!hideRoomNames && roomName && hideRooms.indexOf(roomName.toLowerCase()) === -1) {
     if (noLinkRooms.indexOf(roomName.toLowerCase()) > -1) {
       rowObj.appendChild(generateSpan({
         text: roomName,
@@ -381,7 +382,7 @@ function createRow(message, subText) {
 
 function addText(text, row, message) {
   row.appendChild(generateSpan({
-    text: text,
+    text,
     linkable: message.linkable,
     keepInput: message.keepInput,
     replacePhrase: message.replacePhrase,
@@ -390,7 +391,7 @@ function addText(text, row, message) {
 
 function addRow(message) {
   const defaultLanguage = getDefaultLanguage();
-  const columns = message.columns ? message.columns : 1;
+  const columns = message.columns || 1;
   // Set text depending on default language set. Empty means English
   let currentText = defaultLanguage === '' ? message.text : message[`text_${defaultLanguage}`];
   let currentSubText = defaultLanguage === '' ? message.subText : message[`subText_${defaultLanguage}`];
@@ -498,11 +499,7 @@ function queueMessage(message) {
 }
 
 function copyString(text) {
-  if (text && text !== null) {
-    return JSON.parse(JSON.stringify(text));
-  }
-
-  return '';
+  return text && text !== null ? JSON.parse(JSON.stringify(text)) : '';
 }
 
 function getAliases() {
@@ -599,6 +596,33 @@ function getGpsTracking() {
   return getLocalVal('gpsTracking') === 'true';
 }
 
+function setDisableCommands(disable) {
+  disableCommands = disable;
+  setLocalVal('disableCommands', disable);
+}
+
+function getDisableCommands() {
+  return getLocalVal('disableCommands') === 'true';
+}
+
+function setHideRoomNames(hide) {
+  hideRoomNames = hide;
+  setLocalVal('hideRoomNames', hide);
+}
+
+function getHideRoomNames() {
+  return getLocalVal('hideRoomNames') === 'true';
+}
+
+function setHideTimeStamp(hide) {
+  hideTimeStamp = hide;
+  setLocalVal('hideTimeStamp', hide);
+}
+
+function getHideTimeStamp() {
+  return getLocalVal('hideTimeStamp') === 'true';
+}
+
 function getUser() {
   return getLocalVal('user');
 }
@@ -614,11 +638,7 @@ function removeUser() {
 function getCommandHistory() {
   const commandHistory = getLocalVal('cmdHistory');
 
-  if (commandHistory && commandHistory !== null) {
-    return JSON.parse(commandHistory);
-  }
-
-  return [];
+  return commandHistory && commandHistory !== null ? JSON.parse(commandHistory) : [];
 }
 
 function setCommandHistory(commandHistory) {
@@ -659,7 +679,7 @@ function setInputStart(text) {
 }
 
 function resetCommand(aborted) {
-  const room = getRoom() ? getRoom() : defaultInputStart;
+  const room = defaultInputStart;
   commandHelper.command = null;
   commandHelper.onStep = 0;
   commandHelper.maxSteps = 0;
@@ -682,9 +702,9 @@ function refreshApp() {
 
 function queueCommand(command, data, commandMsg) {
   commandQueue.push({
-    command: command,
-    data: data,
-    commandMsg: commandMsg,
+    command,
+    data,
+    commandMsg,
   });
 }
 
@@ -731,11 +751,12 @@ function pushCommandHistory(command) {
 
 function enterRoom(roomName) {
   setRoom(roomName);
-  setInputStart(roomName);
-  queueMessage({
-    text: [`Entered ${roomName}`],
-    text_se: [`Gick in i ${roomName}`],
-  });
+  setInputStart(defaultInputStart);
+  // setInputStart(roomName);
+  // queueMessage({
+  //   text: [`Entered ${roomName}`],
+  //   text_se: [`Gick in i ${roomName}`],
+  // });
 }
 
 // function resetPreviousCommandPointer() {
@@ -769,17 +790,17 @@ function playMorse(morseCode, silent) {
     soundTimeout = 0;
   }
 
-  for (let i = 0; i < morseCode.length; i++) {
+  for (const code of morseCode) {
     shouldPlay = false;
     duration = 0;
 
-    if (dot === morseCode[i]) {
+    if (dot === code) {
       duration = 50;
       shouldPlay = true;
-    } else if (dash === morseCode[i]) {
+    } else if (dash === code) {
       duration = 150;
       shouldPlay = true;
-    } else if (morseSeparator === morseCode[i]) {
+    } else if (morseSeparator === code) {
       duration = 50;
     } else {
       duration = 75;
@@ -810,7 +831,7 @@ function parseMorse(text) {
     morseCode = morseCodes[filteredText.charAt(i)];
 
     for (let j = 0; j < morseCode.length; j++) {
-      morseCodeText += morseCode[j] + ' ';
+      morseCodeText += `${morseCode[j]} `;
     }
 
     morseCodeText += '   ';
@@ -872,7 +893,7 @@ function locateOnMap(latitude, longitude) {
   }
 
   if (x !== undefined && y !== undefined) {
-    return x + '' + y;
+    return `${x}${y}`;
   }
 
   return textTools.createLine(3);
@@ -906,12 +927,12 @@ function sendLocation() {
       trackingInterval = setTimeout(sendLocation, pausePositionTime);
     };
 
-    watchId = navigator.geolocation.watchPosition(function watchPosition() {
+    watchId = navigator.geolocation.watchPosition(() => {
       // FIXME This is broken and doesn't do anything
       // if (position !== undefined) {
       //  positions.push(position);
       // }
-    }, function watchPositionCallback(err) {
+    }, (err) => {
       if (err.code === err.PERMISSION_DENIED) {
         isTracking = false;
         clearTimeout(trackingInterval);
@@ -953,7 +974,6 @@ function sendLocation() {
  * We check the time between heartbeats and if the time i
  * over 10 seconds (example: when screen is turned off and then on)
  * we force them to reconnect
- * @returns {undefined} Returns nothing
  */
 function isScreenOff() {
   const now = (new Date()).getTime();
@@ -1185,6 +1205,88 @@ function combineSequences(commandName, phrases) {
 //   }
 // }
 
+//     for (let j = 0; j < matchedCommands.length; j++) {
+//       if (matchedCommands[j].charAt(i) !== commandChar) {
+//         matched = false;
+//
+//         break;
+//       }
+//     }
+//
+//     if (matched) {
+//       expanded += commandChar;
+//     } else {
+//       return commandChars.indexOf(sign) >= 0 ? sign + partialMatch + expanded : partialMatch + expanded;
+//     }
+//   }
+//
+//   return '';
+// }
+
+// function autoCompleteCommand() {
+//   const phrases = trimSpace(getInputText().toLowerCase()).split(' ');
+//   // TODO Change from Object.keys for compatibility with older Android
+//   const allCommands = Object.keys(commands).concat(Object.keys(getAliases()));
+//   const matched = [];
+//   const sign = phrases[0].charAt(0);
+//   let newText = '';
+//   let matches;
+//   let partialCommand = phrases[0];
+//
+//   /**
+//    * Auto-complete should only trigger when one phrase is in the input
+//    * It will not auto-complete flags
+//    * If chat mode and the command is prepended or normal mode
+//    */
+//   if (phrases.length === 1 && partialCommand.length > 0 && (commandChars.indexOf(sign) >= 0 || (cmdMode === getMode()) || getUser() === null)) {
+//     // Removes prepend sign
+//     if (commandChars.indexOf(sign) >= 0) {
+//       partialCommand = partialCommand.slice(1);
+//     }
+//
+//     for (const command of allCommands) {
+//       matches = false;
+//
+//       for (let j = 0; j < partialCommand.length; j++) {
+//         const commandAccesssLevel = getCommandAccessLevel(command);
+//         const commandVisibility = getCommandVisibility(command);
+//
+//         if ((isNaN(commandAccesssLevel) || getAccessLevel() >= commandAccesssLevel) && getAccessLevel() >= commandVisibility && partialCommand.charAt(j) === command.charAt(j)) {
+//           matches = true;
+//         } else {
+//           matches = false;
+//
+//           break;
+//         }
+//       }
+//
+//       if (matches) {
+//         matched.push(command);
+//       }
+//     }
+//
+//     if (matched.length === 1) {
+//       const commandIndex = commandChars.indexOf(sign);
+//
+//       if (commandIndex >= 0) {
+//         newText += commandChars[commandIndex];
+//       }
+//
+//       newText += `${matched[0]} `;
+//
+//       clearInput();
+//       setCommandInput(newText);
+//     } else if (matched.length > 0) {
+//       setCommandInput(expandPartialMatch(matched, partialCommand, sign));
+//       queueMessage({ text: [matched.join('\t')] });
+//     }
+//
+//     // No input? Show all available commands
+//   } else if (partialCommand.length === 0) {
+//     commands.help.func();
+//   }
+// }
+
 function printHelpMessage(command) {
   const helpMsg = { text: [] };
   const helpText = labels.getText('help', command);
@@ -1233,7 +1335,7 @@ function retrieveCommand(command) {
 
   return {
     command: getCommand(commandName),
-    commandName: commandName,
+    commandName,
   };
 }
 
@@ -1297,9 +1399,7 @@ function enterKeyHandler() {
         resetCommand(true);
       } else {
         if (!commandHelper.hideInput) {
-          queueMessage({
-            text: [inputText],
-          });
+          queueMessage({ text: [inputText] });
         }
 
         commands[commandObj.command].steps[commandObj.onStep](phrases, socket);
@@ -1310,7 +1410,7 @@ function enterKeyHandler() {
       if (phrases[0].length > 0) {
         const command = retrieveCommand(phrases[0]);
 
-        if (command.command && (isNaN(command.command.accessLevel) || getAccessLevel() >= command.command.accessLevel)) {
+        if (!disableCommands && (command.command && (isNaN(command.command.accessLevel) || getAccessLevel() >= command.command.accessLevel))) {
           // Store the command for usage with up/down arrows
           pushCommandHistory(phrases.join(' '));
 
@@ -1572,7 +1672,7 @@ function keyPress(event) {
 
 function attachMenuListener(menuItem, func, funcParam) {
   if (func) {
-    menuItem.addEventListener('click', function menuListener(event) {
+    menuItem.addEventListener('click', (event) => {
       func([funcParam]);
       clicked = true;
       cmdInput.focus();
@@ -1643,10 +1743,7 @@ function populateMenu() {
     },
   };
 
-  const menuItemsKeys = Object.keys(menuItems);
-
-  for (let i = 0; i < menuItemsKeys.length; i++) {
-    const key = menuItemsKeys[i];
+  for (const key of Object.keys(menuItems)) {
     const menuItem = menuItems[key];
     const listItem = createMenuItem(menuItem);
 
@@ -1662,7 +1759,7 @@ function populateMenu() {
 function createCommandStart(commandName) {
   return [
     textTools.createFullLine(),
-    ' ' + commandName.toUpperCase(),
+    ` ${commandName.toUpperCase()}`,
     textTools.createFullLine(),
   ];
 }
@@ -1678,6 +1775,20 @@ function printWelcomeMessage() {
 
     queueMessage(mainLogo);
     queueMessage({ text: labels.getText('info', 'welcomeLoggedIn') });
+    queueMessage({
+      text: [
+        'Frihet',
+        'Trygghet',
+        'Livskvalitet',
+      ],
+      subText: [
+        'Fͬ͊́͏̛̩̮å̸͙̮̰̥̘̝͇̉͛͊̉̾n̨̨̫̜̏͗ǧͪ͗̂́̆͗̚͏̛̠̼̳͕͔̜͓͡e̵̸̹̬̽',
+        'B̡̗̰͆̆̈́͟e͗̓ͦͥͯ̄̊͏̙̹͓̻̫̻͓͠ṛ̭͖̯̜͍̣̼̥̉͒͆̍ͩ͌ͧ̈ó̢̢̗̰̤̙͎̰͑̈́ͯ̋̃͋̈̈ḙ̛̝͕̱͚͌͛ͨ̎͗̈́̇̈̉ͅņ͔͈̥̻̥̈́̍́d̘̯͍͚͖̞̏ͫ̊͡e̳̠̤͓ͩ̔͆̎͋',
+        'O̸̾̓̀ͧ̉̚̕͏̬f̻̯̭̟͖̺̙͚̩ͩͬ̈́ͫ̽̐̕f̸̧͖̙͓̜̝͚̬̃ͭ̔͡e̵̒̐ͭ͏̮̹͉̤r̢̝̻͈̞̤ͣ͐̅͋ͮ',
+      ],
+      extraClass: 'upperCase',
+      msgAnimation: {},
+    });
     // queueMessage({ text: labels.getText('info', 'razorHacked') });
     // queueMessage(razorLogo);
   }
@@ -1711,7 +1822,7 @@ function printStartMessage() {
 }
 
 function attachFullscreenListener() {
-  background.addEventListener('click', function clickHandler(event) {
+  background.addEventListener('click', (event) => {
     clicked = !clicked;
 
     if (clicked) {
@@ -1741,16 +1852,17 @@ function resetAllLocalVals() {
 }
 
 function hideMessageProperties(message = { }) {
+  const modifiedMessage = message;
   const roomName = message.roomName;
 
   // TODO Change blank user and room to booleans instead of string removal
   if (message.extraClass === 'importantMsg') {
-    message.roomName = '';
-    message.userName = '';
-    message.skipTime = true;
+    modifiedMessage.roomName = '';
+    modifiedMessage.userName = '';
+    modifiedMessage.skipTime = true;
   } else if (message.extraClass === 'broadcastMsg') {
-    message.roomName = '';
-    message.userName = '';
+    modifiedMessage.roomName = '';
+    modifiedMessage.userName = '';
   }
 
   if (roomName && roomName !== null) {
@@ -1758,18 +1870,18 @@ function hideMessageProperties(message = { }) {
 
     if (whisperIndex >= 0) {
       if (message.userName === getUser()) {
-        message.roomName = roomName.substring(0, whisperIndex);
+        modifiedMessage.roomName = roomName.substring(0, whisperIndex);
       } else {
-        message.roomName = 'whisper';
+        modifiedMessage.roomName = 'whisper';
       }
     } else if (roomName.indexOf('-device') >= 0) {
-      message.roomName = 'device';
+      modifiedMessage.roomName = 'device';
     } else if (roomName.indexOf('team') >= 0) {
-      message.roomName = 'team';
+      modifiedMessage.roomName = 'team';
     }
   }
 
-  return message;
+  return modifiedMessage;
 }
 
 function prependBroadcastMessage(data = {}) {
@@ -1785,12 +1897,14 @@ function prependBroadcastMessage(data = {}) {
 }
 
 function addMessageSpecialProperties(message = {}) {
+  const modifiedMessage = message;
+
   if (message.extraClass === 'broadcastMsg') {
-    message.text = prependBroadcastMessage({ sender: message.customSender }).concat(message.text);
-    message.text.push(textTools.createFullLine());
+    modifiedMessage.text = prependBroadcastMessage({ sender: message.customSender }).concat(message.text);
+    modifiedMessage.text.push(textTools.createFullLine());
   }
 
-  return message;
+  return modifiedMessage;
 }
 
 function onMessage(data = { message: {} }) {
@@ -1872,7 +1986,7 @@ function onUnfollow(data = { room: { roomName: '' } }) {
 
 function onLogin(data = {}) {
   const user = data.user;
-  const mode = user.mode ? user.mode : cmdMode;
+  const mode = user.mode || cmdMode;
 
   commands.clear.func();
   setUser(user.userName);
@@ -1926,7 +2040,7 @@ function onCommandFail() {
 
 function onReconnectSuccess(data) {
   if (!data.anonUser) {
-    const mode = data.user.mode ? data.user.mode : cmdMode;
+    const mode = data.user.mode || cmdMode;
     const room = getRoom();
 
     commands.mode.func([mode], false);
@@ -1946,10 +2060,10 @@ function onReconnectSuccess(data) {
       }
     }
 
-    queueMessage({
-      text: ['Retrieving missed messages (if any)'],
-      text_se: ['Hämtar missade meddelanden (om det finns några)'],
-    });
+    // queueMessage({
+    //   text: ['Retrieving missed messages (if any)'],
+    //   text_se: ['Hämtar missade meddelanden (om det finns några)'],
+    // });
 
     socket.emit('updateDeviceSocketId', {
       device: {
@@ -2006,12 +2120,8 @@ function onTime(data = {}) {
 }
 
 function onLocationMsg(locationData) {
-  // TODO Change from Object.keys for compatibility with older Android
-  const locationKeys = Object.keys(locationData);
-
-  for (let i = 0; i < locationKeys.length; i++) {
+  for (const user of Object.keys(locationData)) {
     let text = '';
-    const user = locationKeys[i];
     const userLocation = locationData[user];
     const latitude = userLocation.latitude.toFixed(6);
     const longitude = userLocation.longitude.toFixed(6);
@@ -2082,80 +2192,91 @@ function onWeather(report) {
     const month = beautifyNumb(time.getMonth() + 1);
     const temperature = Math.round(weatherInstance.temperature);
     const windSpeed = Math.round(weatherInstance.gust);
-    const precipitation = weatherInstance.precipitation === 0 ? 'Light ' : weatherInstance.precipitation + 'mm ';
+    const precipitation = weatherInstance.precipitation === 0 ? 'Light ' : `${weatherInstance.precipitation}mm `;
     let coverage;
     let precipType;
     weatherString = '';
 
     switch (weatherInstance.precipType) {
-    // None
-    case 0:
-      break;
-    // Snow
-    case 1:
-      precipType = labels.getString('weather', 'snow');
+      // None
+      case 0: {
+        break;
+      }
+      // Snow
+      case 1: {
+        precipType = labels.getString('weather', 'snow');
 
-      break;
-    // Snow + rain
-    case 2:
-      precipType = labels.getString('weather', 'snowRain');
+        break;
+      }
+      // Snow + rain
+      case 2: {
+        precipType = labels.getString('weather', 'snowRain');
 
-      break;
-    // Rain
-    case 3:
-      precipType = labels.getString('weather', 'rain');
+        break;
+      }
+      // Rain
+      case 3: {
+        precipType = labels.getString('weather', 'rain');
 
-      break;
-    // Drizzle
-    case 4:
-      precipType = labels.getString('weather', 'drizzle');
+        break;
+      }
+      // Drizzle
+      case 4: {
+        precipType = labels.getString('weather', 'drizzle');
 
-      break;
-    // Freezing rain
-    case 5:
-      precipType = labels.getString('weather', 'freezeRain');
+        break;
+      }
+      // Freezing rain
+      case 5: {
+        precipType = labels.getString('weather', 'freezeRain');
 
-      break;
-    // Freezing drizzle
-    case 6:
-      precipType = labels.getString('weather', 'freezeDrizzle');
+        break;
+      }
+      // Freezing drizzle
+      case 6: {
+        precipType = labels.getString('weather', 'freezeDrizzle');
 
-      break;
-    default:
-      break;
+        break;
+      }
+      default: {
+        break;
+      }
     }
 
     switch (weatherInstance.cloud) {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-      coverage = labels.getString('weather', 'light');
+      case 0:
+      case 1:
+      case 2:
+      case 3: {
+        coverage = labels.getString('weather', 'light');
 
-      break;
-    case 4:
-    case 5:
-    case 6:
-      coverage = labels.getString('weather', 'moderate');
+        break;
+      }
+      case 4:
+      case 5:
+      case 6: {
+        coverage = labels.getString('weather', 'moderate');
 
-      break;
-    case 7:
-    case 8:
-    case 9:
-      coverage = labels.getString('weather', 'high');
+        break;
+      }
+      case 7:
+      case 8:
+      case 9: {
+        coverage = labels.getString('weather', 'high');
 
-      break;
-    default:
-      break;
+        break;
+      }
+      default: {
+        break;
+      }
     }
 
     weatherString += `${day}/${month} ${hours}:00${'\t'}`;
-    weatherString += `Temperature: ${temperature}${'\xB0C\t'}`;
-    weatherString += `Visibility: ${weatherInstance.visibility}km ${'\t'}`;
-    weatherString += `Wind direction: ${weatherInstance.windDirection}${'\xB0\t'}`;
-    weatherString += `Wind speed: ${windSpeed}m/s${'\t'}`;
-    weatherString += `Blowout risk: ${weatherInstance.thunder}%${'\t'}`;
-    weatherString += `Pollution coverage: ${coverage}${'\t'}`;
+    weatherString += `${labels.getString('weather', 'temperature')}: ${temperature}${'\xB0C\t'}`;
+    weatherString += `${labels.getString('weather', 'visibility')}: ${weatherInstance.visibility}km ${'\t'}`;
+    weatherString += `${labels.getString('weather', 'direction')}: ${weatherInstance.windDirection}${'\xB0\t'}`;
+    weatherString += `${labels.getString('weather', 'speed')}: ${windSpeed}m/s${'\t'}`;
+    weatherString += `${labels.getString('weather', 'pollution')}: ${coverage}${'\t'}`;
 
     if (precipType) {
       weatherString += precipitation;
@@ -2182,7 +2303,7 @@ function onWhoami(data) {
     createCommandEnd('whoami'),
   ]);
 
-  queueMessage({ text: text });
+  queueMessage({ text });
 }
 
 function onList(data = { itemList: [] }) {
@@ -2216,6 +2337,9 @@ function onStartup(params = { }) {
   setDefaultLanguage(params.defaultLanguage);
   setForceFullscreen(params.forceFullscreen);
   setGpsTracking(params.gpsTracking);
+  setDisableCommands(params.disableCommands);
+  setHideRoomNames(params.hideRoomNames);
+  setHideTimeStamp(params.hideTimeStamp);
 }
 
 // function onMissions(data = []) {
@@ -2262,20 +2386,23 @@ function keyReleased(event) {
   const keyCode = typeof event.which === 'number' ? event.which : event.keyCode;
 
   switch (keyCode) {
-  // Ctrl
-  case 17:
-    triggerKeysPressed.ctrl = false;
+    // Ctrl
+    case 17: {
+      triggerKeysPressed.ctrl = false;
 
-    break;
-  // Alt
-  case 18:
-    triggerKeysPressed.alt = false;
+      break;
+    }
+    // Alt
+    case 18: {
+      triggerKeysPressed.alt = false;
 
-    break;
-  default:
-    keyPressed = false;
+      break;
+    }
+    default: {
+      keyPressed = false;
 
-    break;
+      break;
+    }
   }
 }
 
@@ -2455,7 +2582,7 @@ function attachCommands() {
           roomName: phrases[0].toLowerCase(),
         };
 
-        commandHelper.data = { room: room };
+        commandHelper.data = { room };
         commandHelper.hideInput = true;
         hideInput(true);
 
@@ -2496,7 +2623,7 @@ function attachCommands() {
           room.exited = true;
         }
 
-        socket.emit('unfollow', { room: room });
+        socket.emit('unfollow', { room });
       } else {
         queueMessage({
           text: ['You have to specify which room to unfollow'],
@@ -2616,15 +2743,15 @@ function attachCommands() {
     category: 'advanced',
   };
   commands.register = {
-    func: function registerCommand(phrases) {
+    func: function registerCommand(phrases = []) {
       const data = {};
 
       if (getUser() === null) {
-        const userName = phrases ? phrases[0] : undefined;
+        const userName = phrases[0];
 
         if (userName && userName.length >= 3 && userName.length <= 6 && isTextAllowed(userName)) {
           data.user = {
-            userName: userName,
+            userName,
             registerDevice: getDeviceId(),
           };
           commandHelper.data = data;
@@ -2680,8 +2807,8 @@ function attachCommands() {
         setInputStart('password');
         commandHelper.onStep++;
       },
-      function registerStepTwo(phrases) {
-        const password = phrases ? phrases[0] : undefined;
+      function registerStepTwo(phrases = []) {
+        const password = phrases[0];
 
         if (phrases && password.length >= 3 && isTextAllowed(password)) {
           commandHelper.data.user.password = password;
@@ -2705,8 +2832,8 @@ function attachCommands() {
           });
         }
       },
-      function registerStepThree(phrases) {
-        const password = phrases ? phrases[0] : undefined;
+      function registerStepThree(phrases = []) {
+        const password = phrases[0];
 
         if (password === commandHelper.data.user.password) {
           queueMessage({ text: labels.getText('info', 'congratulations') });
@@ -2905,7 +3032,7 @@ function attachCommands() {
       } else if (phrases.length > 0) {
         const userName = phrases[0].toLowerCase();
 
-        socket.emit('locate', { user: { userName: userName } });
+        socket.emit('locate', { user: { userName } });
       } else {
         socket.emit('locate', { user: { userName: getUser() } });
       }
@@ -2941,7 +3068,7 @@ function attachCommands() {
     func: function morseCommand(phrases, local) {
       if (phrases && phrases.length > 0) {
         const data = {
-          local: local,
+          local,
         };
         const morsePhrases = phrases;
 
@@ -3049,7 +3176,7 @@ function attachCommands() {
         if (userName === '*') {
           socket.emit('verifyAllUsers');
         } else {
-          const data = { user: { userName: userName } };
+          const data = { user: { userName } };
 
           socket.emit('verifyUser', data);
         }
@@ -3068,7 +3195,7 @@ function attachCommands() {
         if (teamName === '*') {
           socket.emit('verifyAllTeams');
         } else {
-          const data = { team: { teamName: teamName } };
+          const data = { team: { teamName } };
 
           socket.emit('verifyTeam', data);
         }
@@ -3083,7 +3210,7 @@ function attachCommands() {
     func: function banuserCommand(phrases) {
       if (phrases.length > 0) {
         const userName = phrases[0].toLowerCase();
-        const data = { user: { userName: userName } };
+        const data = { user: { userName } };
 
         socket.emit('ban', data);
       } else {
@@ -3097,7 +3224,7 @@ function attachCommands() {
     func: function unbanuserCommand(phrases) {
       if (phrases.length > 0) {
         const userName = phrases[0].toLowerCase();
-        const data = { user: { userName: userName } };
+        const data = { user: { userName } };
 
         socket.emit('unban', data);
       } else {
@@ -3189,7 +3316,7 @@ function attachCommands() {
             message: {
               text: [
                 'WARNING! Intrustion attempt detected!',
-                'User ' + getUser() + ' tried breaking in',
+                `User ${getUser()} tried breaking in`,
               ],
               user: 'SYSTEM',
             },
@@ -3313,7 +3440,7 @@ function attachCommands() {
           const deviceId = phrases[0];
 
           if (deviceId.length > 0) {
-            commandHelper.data.device = { deviceId: deviceId };
+            commandHelper.data.device = { deviceId };
             queueMessage({
               text: ['Searching for device...'],
               text_se: ['Letar efter enheten...'],
@@ -3722,7 +3849,7 @@ function attachCommands() {
             const invitation = sentInvitations[i];
             const itemNumber = i + 1;
 
-            text.push('<' + itemNumber + '> Join ' + invitation.invitationType + ' ' + invitation.itemName + '. Sent by ' + invitation.sender);
+            text.push(`<${itemNumber}> Join ${invitation.invitationType} ${invitation.itemName}. Sent by ${invitation.sender}`);
           }
 
           queueMessage({ text: createCommandStart('Invitations').concat(text, createCommandEnd()) });
@@ -3748,20 +3875,23 @@ function attachCommands() {
           const invitation = commandHelper.data.invitations[itemNumber];
 
           if (['accept', 'a', 'decline', 'd'].indexOf(answer) > -1) {
-            const accepted = ['accept', 'a'].indexOf(answer) > -1 ? true : false;
-            const data = { accepted: accepted, invitation: invitation };
+            const accepted = ['accept', 'a'].indexOf(answer) > -1;
+            const data = { accepted, invitation };
 
             switch (invitation.invitationType) {
-            case 'team':
-              socket.emit('teamAnswer', data);
+              case 'team': {
+                socket.emit('teamAnswer', data);
 
-              break;
-            case 'room':
-              socket.emit('roomAnswer', data);
+                break;
+              }
+              case 'room': {
+                socket.emit('roomAnswer', data);
 
-              break;
-            default:
-              break;
+                break;
+              }
+              default: {
+                break;
+              }
             }
 
             resetCommand(false);
@@ -3849,49 +3979,53 @@ function attachCommands() {
     func: function settingsCommand(phrases = []) {
       if (phrases.length > 1) {
         const setting = phrases[0];
-        const value = phrases[1] === 'on' || value === true ? true : false;
+        const value = phrases[1] === 'on';
 
         switch (setting) {
-        case 'fastmode':
-          setFastMode(fastMode);
+          case 'fastmode': {
+            setFastMode(fastMode);
 
-          if (value) {
-            queueMessage({ text: labels.getText('info', 'fastModeOn') });
-          } else {
-            queueMessage({ text: labels.getText('info', 'fastModeOff') });
+            if (value) {
+              queueMessage({ text: labels.getText('info', 'fastModeOn') });
+            } else {
+              queueMessage({ text: labels.getText('info', 'fastModeOff') });
+            }
+
+            break;
           }
+          case 'hiddencursor': {
+            setHiddenCursor(value);
 
-          break;
-        case 'hiddencursor':
-          setHiddenCursor(value);
+            if (value) {
+              queueMessage({ text: labels.getText('info', 'hiddenCursorOn') });
+            } else {
+              queueMessage({ text: labels.getText('info', 'hiddenCursorOff') });
+            }
 
-          if (value) {
-            queueMessage({ text: labels.getText('info', 'hiddenCursorOn') });
-          } else {
-            queueMessage({ text: labels.getText('info', 'hiddenCursorOff') });
+            break;
           }
+          case 'hiddenbottommenu': {
+            setHiddenBottomMenu(value);
 
-          break;
-        case 'hiddenbottommenu':
-          setHiddenBottomMenu(value);
+            if (value) {
+              queueMessage({ text: labels.getText('info', 'hiddenBottomMenuOn') });
+            } else {
+              queueMessage({ text: labels.getText('info', 'hiddenBottomMenuOff') });
+            }
 
-          if (value) {
-            queueMessage({ text: labels.getText('info', 'hiddenBottomMenuOn') });
-          } else {
-            queueMessage({ text: labels.getText('info', 'hiddenBottomMenuOff') });
+            break;
           }
+          default: {
+            queueMessage({ text: labels.getText('errors', 'invalidSetting') });
 
-          break;
-        default:
-          queueMessage({ text: labels.getText('errors', 'invalidSetting') });
-
-          break;
+            break;
+          }
         }
       } else {
         queueMessage({ text: labels.retrieveMesssage('errors', 'settingUsage') });
       }
     },
-    accessLevel: 1,
+    accessLevel: 0,
     visibility: 13,
     category: 'admin',
   };
@@ -3909,6 +4043,9 @@ function attachCommands() {
 function startBoot() {
   oldAndroid = isOldAndroid();
   fastMode = getFastMode();
+  disableCommands = getDisableCommands();
+  hideRoomNames = getHideRoomNames();
+  hideTimeStamp = getHideTimeStamp();
 
   attachCommands();
   populateMenu();
