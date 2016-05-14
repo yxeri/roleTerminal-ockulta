@@ -589,6 +589,20 @@ function setHiddenCmdInput(isHidden) {
   setLocalVal('hiddenCmdInput', isHidden);
 }
 
+function isThinnerView() {
+  return getLocalVal('thinnerView') === 'true';
+}
+
+function setThinnerView(isThinner) {
+  if (isThinner) {
+    document.body.classList.add('thinner');
+  } else {
+    document.body.classList.remove('thinner');
+  }
+
+  setLocalVal('thinnerView', isThinner);
+}
+
 function getAccessLevel() {
   return parseInt(getLocalVal('accessLevel'), 10);
 }
@@ -4057,6 +4071,17 @@ function attachCommands() {
 
             break;
           }
+          case 'thinnerview': {
+            setThinnerView(value);
+
+            if (value) {
+              queueMessage({ text: labels.getText('info', 'thinnerViewOn') });
+            } else {
+              queueMessage({ text: labels.getText('info', 'thinnerViewOff') });
+            }
+
+            break;
+          }
           default: {
             queueMessage({ text: labels.getText('errors', 'invalidSetting') });
 
@@ -4097,6 +4122,7 @@ function startBoot() {
   setHiddenCursor(isHiddenCursor());
   setHiddenBottomMenu(isHiddenBottomMenu());
   setHiddenCmdInput(isHiddenCmdInput());
+  setThinnerView(isThinnerView());
 
   if (!isTouchDevice()) {
     cmdInput.focus();
