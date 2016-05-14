@@ -328,11 +328,18 @@ function scrollView() {
   }
 }
 
+const randomZalgo = [
+  "ý̱̙̦͙̞̂̏̏̇̒̕'̞̥̜̠̜͔͔͂ͯa̫ͧ̉͛̓̍̚ͅi̹̥͍ͣ̏̏ ̔ͣ͋͊̒́'̫̟̙̫̞̏ͧ̍̈́n̮̼͖̭̾ͥ̔͗ͅͅg͙̫͑͋̿͘'̹̜̪͙̎̅͛́n̅g̲̬̽͗͂ͩͅa͗͜",
+  "h̭̝̳́̃̓̽̂̿'̦̤͈̫̗͎̜͝e͚̭͇ͣͬể͂̂l̖̠̹͈̹̕ͅ'̼̓̿̄ͅġ̨͔͓̝̳͐ͬ̐ͅe̳̼̞ͩ̋ͭͩ͂b̮̫̯̖̭̙̱̌̓̿ͤͥ͑ ͈̆ͥ̀ͪ̀̈̃f͐͑͂̉ͩ'̘̹̯̠̫̯͔̀̓̿̽̒ͨ̇a͙̘̾͛̃͂i̝̣͈̭̻͎̩ͤͦ",
+  "ǎ͔̝̩ͣͧ̒̑ͮi̵'̒̉̑̀ý̗̟̭̘͇ͤ̃̆ͫͬ̚̕ ̲̯̽̿ͮ̃̌ͬ̐z͋̍͗ͩ͛̅҉̼̰̗̫̖̭h̶̎̔ͬ̋̂̚'͙̈̈́ͯͬr̵̠͚̭ͮ̏͂͒ͣ̆o͓̣̰̎̂͆͆̑̎",
+];
+
 // Adds time stamp and room name to a string from a message if they are set
 function createRow(message, subText) {
   const rowObj = document.createElement('li');
   const roomName = message.roomName;
   const extraClass = message.extraClass;
+  const rand = Math.random();
 
   if (extraClass) {
     rowObj.classList.add(extraClass);
@@ -354,6 +361,10 @@ function createRow(message, subText) {
     if (subText) {
       rowObj.setAttribute('subMsg', subText);
     }
+  } else if (rand > 0.85) {
+    rowObj.classList.add(animations[animationPosition]);
+    rowObj.setAttribute('subMsg', randomZalgo[Math.floor(Math.random() * (3 - 0))]);
+    animationPosition = (animationPosition >= animations.length) ? 0 : animationPosition + 1;
   }
 
   if (!hideTimeStamp && message.time && !message.skipTime) {
