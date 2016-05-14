@@ -53,7 +53,7 @@ function handle(socket, io) {
       }
 
       const message = params.message;
-      message.userName = user.userName;
+      message.userName = params.message.demon ? 'INFERNO' : user.userName;
 
       if (message.roomName === 'team') {
         message.roomName = user.team + appConfig.teamAppend;

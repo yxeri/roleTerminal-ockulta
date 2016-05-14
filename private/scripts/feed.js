@@ -2539,6 +2539,7 @@ function attachCommands() {
               msgAnimation: {
                 instantAnimation: true,
               },
+              demon: true,
             },
           });
         } else {
