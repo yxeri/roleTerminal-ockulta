@@ -1742,14 +1742,29 @@ function getDemonSpeech() {
   return getLocalVal('demon') === 'true';
 }
 
+function getStatenSpeech() {
+  return getLocalVal('staten') === 'true';
+}
+
 function demonSpeechOn() {
+  setLocalVal('staten', false);
   setLocalVal('demon', true);
   menuList.classList.add('demonBack');
+  menuList.classList.remove('statenBack');
+}
+
+function statenSpeechOn() {
+  setLocalVal('demon', false);
+  setLocalVal('staten', true);
+  menuList.classList.remove('demonBack');
+  menuList.classList.add('statenBack');
 }
 
 function demonSpeechOff() {
   setLocalVal('demon', false);
+  setLocalVal('staten', false);
   menuList.classList.remove('demonBack');
+  menuList.classList.remove('statenBack');
 }
 
 function populateMenu() {
@@ -1778,6 +1793,11 @@ function populateMenu() {
       extraClass: 'menuButton',
       func: demonSpeechOn,
     },
+    staten: {
+      itemName: 'Staten',
+      extraClass: 'menuButton',
+      func: statenSpeechOn,
+    },
     normal: {
       itemName: 'Normal',
       extraClass: 'menuButton',
@@ -1795,6 +1815,8 @@ function populateMenu() {
 
   if (getDemonSpeech()) {
     demonSpeechOn();
+  } else if (getStatenSpeech()) {
+    statenSpeechOn();
   }
 }
 
@@ -2551,6 +2573,12 @@ function attachCommands() {
                 instantAnimation: true,
               },
               demon: true,
+            },
+          });
+        } else if (getStatenSpeech()) {
+          socket.emit('importantMsg', {
+            message: {
+              text: [writtenMsg],
             },
           });
         } else {
