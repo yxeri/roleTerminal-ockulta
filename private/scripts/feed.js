@@ -219,7 +219,7 @@ function setFastMode(isOn) {
   setLocalVal('fastMode', isOn);
 }
 
-function setHideRoomNames(hide) {
+function shouldHideRoomNames(hide) {
   setLocalVal('hideRoomNames', hide);
 }
 
@@ -227,7 +227,7 @@ function getHideRoomNames() {
   return getLocalVal('hideRoomNames') === 'true';
 }
 
-function setHideTimeStamp(hide) {
+function shouldHideTimeStamp(hide) {
   setLocalVal('hideTimeStamp', hide);
 }
 
@@ -561,7 +561,7 @@ function isHiddenCursor() {
   return getLocalVal('hiddenCursor') === 'true';
 }
 
-function setHiddenCursor(isHidden) {
+function shouldHideCursor(isHidden) {
   if (isHidden) {
     background.classList.add('hideCursor');
   } else {
@@ -575,7 +575,7 @@ function isHiddenBottomMenu() {
   return getLocalVal('hiddenBottomMenu') === 'true';
 }
 
-function setHiddenBottomMenu(isHidden) {
+function shouldHideBottomMenu(isHidden) {
   if (isHidden) {
     menu.classList.add('hide');
     cmdInput.classList.remove('menuBottomPadding');
@@ -591,7 +591,7 @@ function isHiddenCmdInput() {
   return getLocalVal('hiddenCmdInput') === 'true';
 }
 
-function setHiddenCmdInput(isHidden) {
+function shouldHideCmdInput(isHidden) {
   const cmdContainer = document.getElementById('inputContainer');
 
   if (isHidden) {
@@ -603,11 +603,11 @@ function setHiddenCmdInput(isHidden) {
   setLocalVal('hiddenCmdInput', isHidden);
 }
 
-function isThinnerView() {
+function isThinView() {
   return getLocalVal('thinnerView') === 'true';
 }
 
-function setThinnerView(isThinner) {
+function shouldThinView(isThinner) {
   if (isThinner) {
     document.body.classList.add('thinner');
   } else {
@@ -625,7 +625,7 @@ function setAccessLevel(accessLevel) {
   setLocalVal('accessLevel', accessLevel);
 }
 
-function setForceFullscreen(forceFullscreen) {
+function shouldForceFullscreen(forceFullscreen) {
   setLocalVal('forceFullscreen', forceFullscreen);
 }
 
@@ -633,7 +633,7 @@ function getForceFullscreen() {
   return getLocalVal('forceFullscreen') === 'true';
 }
 
-function setGpsTracking(gpsTracking) {
+function shouldGpsTrack(gpsTracking) {
   setLocalVal('gpsTracking', gpsTracking);
 }
 
@@ -641,7 +641,7 @@ function getGpsTracking() {
   return getLocalVal('gpsTracking') === 'true';
 }
 
-function setDisableCommands(disable) {
+function shouldDisableCommands(disable) {
   setLocalVal('disableCommands', disable);
 }
 
@@ -698,7 +698,7 @@ function getStaticInputStart() {
   return getLocalVal('staticInputStart') === 'true';
 }
 
-function setStaticInputStart(isStatic) {
+function shouldStaticInputStart(isStatic) {
   setLocalVal('staticInputStart', isStatic);
 }
 
@@ -3492,7 +3492,7 @@ function attachCommands() {
             break;
           }
           case 'hiddencursor': {
-            setHiddenCursor(value);
+            shouldHideCursor(value);
 
             if (value) {
               queueMessage({ text: labels.getText('info', 'hiddenCursorOn') });
@@ -3503,7 +3503,7 @@ function attachCommands() {
             break;
           }
           case 'hiddenbottommenu': {
-            setHiddenBottomMenu(value);
+            shouldHideBottomMenu(value);
 
             if (value) {
               queueMessage({ text: labels.getText('info', 'hiddenBottomMenuOn') });
@@ -3514,7 +3514,7 @@ function attachCommands() {
             break;
           }
           case 'hiddencmdinput': {
-            setHiddenCmdInput(value);
+            shouldHideCmdInput(value);
 
             if (value) {
               queueMessage({ text: labels.getText('info', 'hiddenCmdInputOn') });
@@ -3525,7 +3525,7 @@ function attachCommands() {
             break;
           }
           case 'thinnerview': {
-            setThinnerView(value);
+            shouldThinView(value);
 
             if (value) {
               queueMessage({ text: labels.getText('info', 'thinnerViewOn') });
@@ -4005,17 +4005,17 @@ function onMatchFound(data = { matchedName: '', defaultLanguage: '' }) {
  */
 function onStartup(params = { }) {
   setDefaultLanguage(params.defaultLanguage);
-  setForceFullscreen(params.forceFullscreen);
-  setGpsTracking(params.gpsTracking);
-  setDisableCommands(params.disableCommands);
-  setHideRoomNames(params.hideRoomNames);
-  setHideTimeStamp(params.hideTimeStamp);
-  setStaticInputStart(params.staticInputStart);
+  shouldForceFullscreen(params.forceFullscreen);
+  shouldGpsTrack(params.gpsTracking);
+  shouldDisableCommands(params.disableCommands);
+  shouldHideRoomNames(params.hideRoomNames);
+  shouldHideTimeStamp(params.hideTimeStamp);
+  shouldStaticInputStart(params.staticInputStart);
   setDefaultInputStart(params.defaultInputStart);
-  setHiddenCursor(isHiddenCursor());
-  setHiddenBottomMenu(isHiddenBottomMenu());
-  setHiddenCmdInput(isHiddenCmdInput());
-  setThinnerView(isThinnerView());
+  shouldHideCursor(isHiddenCursor());
+  shouldHideBottomMenu(isHiddenBottomMenu());
+  shouldHideCmdInput(isHiddenCmdInput());
+  shouldThinView(isThinView());
 
   socket.emit('getCommands');
   labels.setLanguage(getDefaultLanguage());
