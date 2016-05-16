@@ -16,6 +16,7 @@ const databasePopulation = require('../config/defaults/config').databasePopulati
 const logger = require('../utils/logger');
 const messenger = require('../socketHelpers/messenger');
 const deviceHandler = require('./socketHandlers/device');
+const effectHandler = require('./socketHandlers/effect');
 
 function handle(io) {
   router.get('/', (req, res) => {
@@ -34,6 +35,7 @@ function handle(io) {
     hackingHandler.handle(socket, io);
     utilityHandler.handle(socket, io);
     locationHandler.handle(socket, io);
+    effectHandler.handle(socket, io);
 
     socket.on('disconnect', () => {
       dbConnector.getUserById(socket.id, (err, user) => {

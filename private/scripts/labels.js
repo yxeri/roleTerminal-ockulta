@@ -1110,6 +1110,47 @@ const all = {
       },
     },
   },
+  creepyRandom: {
+    helpMe: [
+      'Hjälp mig!',
+      'De är här!',
+      'Hjälp mig!',
+      'Låt dem inte ta mig!',
+    ],
+  },
+  incantations: {
+    lordLucifer: [
+      'Domine deus meus in te speravi conlitebor tibi domine in toto corde meo quem ad modum desiderat cervus ad fantes aquarum',
+      'Ouver! Aliseon! Mandousin! Premy! Oriet! Mayorus! Esmony! Estiot! Dumosson! Danochar! Casmiel! Sadirno! Eparinesant!',
+      'Domine meus Lucifer!',
+    ],
+    liberateMe: [
+      'Legem pone mihi, Domine Satanus, docet scientiam',
+      'Dirige me in sapientia tua',
+      'Dimitte me ut tangam te sentias quod coram me',
+      'Ne me teneri irrefragabilibus doctrinae',
+      'Sed me vera libertas',
+    ],
+    hellGate: [
+      'Quaero potestatem noctis',
+      'Ad primum ergo dicendum quod vires et virtutem',
+      'Qualia territus cognitionem acquirere',
+      'Etiam rogo et te mea tertia oculis',
+      'Et ponam oculos meos vestram lucem',
+      'Conjuro potentiae Lucifer',
+      'Patefacio a porta ad inferos',
+      'Et tua deamones transire',
+      'Sic urantar mundi',
+    ],
+  },
+  stateMessages: {
+    noHellGate: [
+      'Vi upptäckte ett försök till att öppna en icke-godkänd portal till Helvetet',
+      'Vi vill påminna alla medarbetare om att det är förbjudet att öppna portaler till Helvetet utan korrekt ifylld och godkänd blankett från relevant avdelning',
+      'De skyldiga har omhändertagits och skickats till rehabilitering',
+      'Systemet har återställs. Ha en fortsatt produktiv dag',
+    ],
+  },
 };
 
 /**

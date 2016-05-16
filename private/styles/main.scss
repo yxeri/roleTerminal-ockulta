@@ -300,6 +300,41 @@ pre {
   margin-right: 3em;
 }
 
+.demon {
+  color: #eb3b39;
+  text-shadow: 1px 1px 5px #802828;
+}
+
+.hellgate {
+  color: #eb3b39 !important;
+  text-shadow: 1px 1px 5px #802828 !important;
+  background-color: #290d0d !important;
+  -webkit-animation: none !important;
+  animation: none !important;
+}
+
+.glitch {
+  li:nth-child(3n + 3) {
+    -webkit-animation: glitch 1.5s step-start infinite;
+    animation: glitch 1.5s step-start infinite;
+    -webkit-animation-direction: alternate;
+    animation-direction: alternate;
+  }
+  li:nth-child(5n + 5) {
+    -webkit-animation: glitch 2s step-end infinite;
+    animation: glitch 2s step-end infinite;
+    -webkit-animation-direction: alternate-reverse;
+    animation-direction: alternate-reverse;
+  }
+}
+
+.darken {
+  -webkit-animation: darken 30s linear;
+  animation: darken 30s linear;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+}
+
 @media (max-width: 736px) {
   #mainFeed li {
     padding: 0 .4em 0 .4em;
@@ -345,6 +380,41 @@ pre {
 }
 
 @media (max-height: 414px) and (max-width: 736px) , (max-height: 736px) and (max-width: 414px) {
+}
+
+@keyframes darken {
+  from {
+    color: $text-color;
+    text-shadow: 1px 1px 3px $shadow-color;
+  }
+  to {
+    color: #3e1d1d;
+    text-shadow: 1px 1px 3px #1d0e0e;
+  }
+}
+
+@keyframes glitch {
+  from {
+    margin-left: 0;
+  }
+  5% {
+    margin-left: .1em;
+  }
+  25% {
+    margin-left: 0;
+  }
+  60% {
+    margin-left: -.1em;
+  }
+  75% {
+    margin-left: .2em;
+  }
+  95% {
+    margin-left: -.1em;
+  }
+  to {
+    margin-left: 0;
+  }
 }
 
 @-webkit-keyframes brightness {
@@ -401,12 +471,4 @@ pre {
     opacity: 0;
     display: none;
   }
-}
-
-@-webkit-keyframes glitch {
-
-}
-
-@keyframes glitch {
-
 }

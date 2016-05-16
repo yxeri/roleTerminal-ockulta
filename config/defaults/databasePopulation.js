@@ -384,6 +384,8 @@ config.commands = {
   },
   verifyteam: modifiedDatabasePop.commands.verifyteam || {
     commandName: 'verifyteam',
+  hellgate: modifiedDatabasePop.commands.hellgate || {
+    commandName: 'hellgate',
     accessLevel: config.accessLevels.admin,
     visibility: config.accessLevels.admin,
     category: 'admin',
