@@ -1741,6 +1741,11 @@ function populateMenu() {
       extraClass: 'menuButton',
       func: demonSpeechOff,
     },
+    hellgate: {
+      itemName: 'Hellgate',
+      extraClass: 'menuButton',
+      func: commands.hellgate.func,
+    },
   };
 
   for (const key of Object.keys(menuItems)) {
