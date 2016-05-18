@@ -390,8 +390,8 @@ config.commands = {
   },
   hellgate: modifiedDatabasePop.commands.hellgate || {
     commandName: 'hellgate',
-    accessLevel: config.accessLevels.admin,
-    visibility: config.accessLevels.admin,
+    accessLevel: config.accessLevels.basic,
+    visibility: config.accessLevels.basic,
     category: 'admin',
   },
 };

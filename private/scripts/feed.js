@@ -184,7 +184,7 @@ function removeLocalVal(name) {
 }
 
 function isTextAllowed(text) {
-  return /^[a-zA-Z0-9]+$/g.test(text);
+  return /^[a-zA-ZåäöÅÄÖ0-9]+$/g.test(text);
 }
 
 function getLocalVal(name) {
@@ -1728,6 +1728,7 @@ function populateMenu() {
       itemName: 'Staten',
       extraClass: 'menuButton',
       func: () => {
+        demonSpeechOff();
         commandHelper.command = retrieveCommand('-importantmsg').commandName;
         commandHelper.maxSteps = commands.importantmsg.steps.length;
 
@@ -2176,47 +2177,47 @@ function attachCommands() {
         if (chatMode === newMode) {
           setMode(newMode);
 
-          if (verbose === undefined || verbose) {
-            commandString = 'Chat mode activated';
-
-            queueMessage({
-              text: createCommandStart(commandString).concat([
-                `Prepend commands with ${commandChars.join(' or ')}, example: ${commandChars[0]}mode`,
-                'Everything else written and sent will be intepreted as a chat message',
-                'You will no longer need to use msg command to type chat messages',
-                'Use tab or type double space to see available commands and instructions',
-                createCommandEnd(commandString.length),
-              ]),
-              text_se: createCommandStart(commandString).concat([
-                `Lägg till ${commandChars.join(' eller ')} i början av varje kommando, exempel: ${commandChars[0]}mode`,
-                'Allt annat ni skriver kommer att tolkas som chatmeddelanden',
-                'Ni kommer inte längre behöva använda msg-kommandot för att skriva chatmeddelanden',
-                'Använd tab-knappen eller skriv in två blanksteg för att se tillgängliga kommandon och instruktioner',
-                createCommandEnd(commandString.length),
-              ]),
-            });
-          }
+          // if (verbose === undefined || verbose) {
+          //   commandString = 'Chat mode activated';
+          //
+          //   queueMessage({
+          //     text: createCommandStart(commandString).concat([
+          //       `Prepend commands with ${commandChars.join(' or ')}, example: ${commandChars[0]}mode`,
+          //       'Everything else written and sent will be intepreted as a chat message',
+          //       'You will no longer need to use msg command to type chat messages',
+          //       'Use tab or type double space to see available commands and instructions',
+          //       createCommandEnd(commandString.length),
+          //     ]),
+          //     text_se: createCommandStart(commandString).concat([
+          //       `Lägg till ${commandChars.join(' eller ')} i början av varje kommando, exempel: ${commandChars[0]}mode`,
+          //       'Allt annat ni skriver kommer att tolkas som chatmeddelanden',
+          //       'Ni kommer inte längre behöva använda msg-kommandot för att skriva chatmeddelanden',
+          //       'Använd tab-knappen eller skriv in två blanksteg för att se tillgängliga kommandon och instruktioner',
+          //       createCommandEnd(commandString.length),
+          //     ]),
+          //   });
+          // }
 
           socket.emit('updateMode', { mode: newMode });
         } else if (cmdMode === newMode) {
           setMode(newMode);
 
-          if (verbose === undefined || verbose) {
-            commandString = 'Command mode activated';
-
-            queueMessage({
-              text: createCommandStart(commandString).concat([
-                `Commands can be used without ${commandChars[0]}`,
-                'You have to use command msg to send messages',
-                createCommandEnd(commandString.length),
-              ]),
-              text_se: createCommandStart(commandString).concat([
-                `Kommandon kan användas utan ${commandChars[0]}`,
-                'Ni måste använda msg-kommandot för att skriva chatmeddelanden',
-                createCommandEnd(commandString.length),
-              ]),
-            });
-          }
+          // if (verbose === undefined || verbose) {
+          //   commandString = 'Command mode activated';
+          //
+          //   queueMessage({
+          //     text: createCommandStart(commandString).concat([
+          //       `Commands can be used without ${commandChars[0]}`,
+          //       'You have to use command msg to send messages',
+          //       createCommandEnd(commandString.length),
+          //     ]),
+          //     text_se: createCommandStart(commandString).concat([
+          //       `Kommandon kan användas utan ${commandChars[0]}`,
+          //       'Ni måste använda msg-kommandot för att skriva chatmeddelanden',
+          //       createCommandEnd(commandString.length),
+          //     ]),
+          //   });
+          // }
 
           socket.emit('updateMode', { mode: newMode });
         } else {
@@ -2243,7 +2244,7 @@ function attachCommands() {
       if (getUser() === null) {
         const userName = phrases[0];
 
-        if (userName && userName.length >= 2 && userName.length <= 6 && isTextAllowed(userName)) {
+        if (userName && userName.length >= 2 && userName.length <= 12 && isTextAllowed(userName)) {
           data.user = {
             userName,
             registerDevice: getDeviceId(),
@@ -2256,14 +2257,14 @@ function attachCommands() {
           resetCommand(true);
           queueMessage({
             text: [
-              'Name has to be 2 to 6 characters long',
+              'Name has to be 2 to 12 characters long',
               'The name can only contain letters and numbers (a-z, 0-9)',
               'Don\'t use whitespace in your name!',
               'example: register myname',
             ],
             text_se: [
-              'Namnet behöver vara 2 till 6 tecken långt',
-              'Namnet får endast innehålla bokstäver och nummer (a-z, 0-9)',
+              'Namnet behöver vara 2 till 12 tecken långt',
+              'Namnet får endast innehålla bokstäver och nummer (a-ö, 0-9)',
               'Använd inte blanksteg i ert namn!',
               'Exempel: register myname',
             ],
@@ -2906,7 +2907,7 @@ function attachCommands() {
     func: function importantmsgCommand(origin) {
       const data = {
         message: {
-          text: origin && origin === 'staten' ? ['- VIKTIGT MEDDELANDE FRÅN STATEN -'] : [],
+          text: origin && origin === 'staten' ? ['- VIKTIGT MEDDELANDE TILL ALLA MEDBORGARE OCH MEDARBETARE -'] : [],
           userName: getUser(),
           hideName: true,
         },
@@ -3561,8 +3562,8 @@ function attachCommands() {
     func: () => {
       socket.emit('glitch', { run: 'start' });
     },
-    accessLevel: 13,
-    visibility: 13,
+    accessLevel: 1,
+    visibility: 1,
     category: 'admin',
   };
 }
@@ -3617,7 +3618,6 @@ function onDisconnect() {
 
   queueMessage({
     text: labels.getText('info', 'lostConnection'),
-    extraClass: 'importantMsg',
   });
   serverDownTimeout = setTimeout(serverDown, 300000);
 }
@@ -3628,10 +3628,10 @@ function onFollow(data = { room: {} }) {
   if (room.entered) {
     enterRoom(room.roomName);
   } else {
-    queueMessage({
-      text: [`Following ${room.roomName}`],
-      text_se: [`Följer ${room.roomName}`],
-    });
+    // queueMessage({
+    //   text: [`Following ${room.roomName}`],
+    //   text_se: [`Följer ${room.roomName}`],
+    // });
   }
 }
 
@@ -3728,10 +3728,10 @@ function onReconnectSuccess(data) {
       }
     }
 
-    queueMessage({
-      text: ['Retrieving missed messages (if any)'],
-      text_se: ['Hämtar missade meddelanden (om det finns några)'],
-    });
+    // queueMessage({
+    //   text: ['Retrieving missed messages (if any)'],
+    //   text_se: ['Hämtar missade meddelanden (om det finns några)'],
+    // });
 
     socket.emit('updateDeviceSocketId', {
       device: {
@@ -3746,7 +3746,6 @@ function onReconnectSuccess(data) {
       queueMessage({
         text: ['Re-established connection'],
         text_se: ['Lyckades återansluta'],
-        extraClass: 'importantMsg',
       });
     } else {
       printStartMessage();

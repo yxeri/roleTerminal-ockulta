@@ -9,7 +9,7 @@ const messenger = require('../../socketHelpers/messenger');
 const objectValidator = require('../../utils/objectValidator');
 
 function isTextAllowed(text) {
-  return /^[a-zA-Z0-9]+$/g.test(text);
+  return /^[a-zA-ZåäöÅÄÖ0-9]+$/g.test(text);
 }
 
 function handle(socket, io) {
