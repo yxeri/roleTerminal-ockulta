@@ -386,7 +386,7 @@ function createRow(message, subText) {
     if (subText) {
       rowObj.setAttribute('subMsg', subText);
     }
-  } else if (rand > 0.85) {
+  } else if (rand > 0.90) {
     rowObj.classList.add(animations[animationPosition]);
     rowObj.setAttribute('subMsg', zalgoGenerator.createZalgoPhrase(subText || message.text.join(' ')));
     animationPosition = (animationPosition >= animations.length) ? 0 : animationPosition + 1;
@@ -3560,7 +3560,6 @@ function attachCommands() {
   commands.hellgate = {
     func: () => {
       socket.emit('glitch', { run: 'start' });
-      console.log('hellgate');
     },
     accessLevel: 13,
     visibility: 13,
@@ -3999,6 +3998,51 @@ function onMatchFound(data = { matchedName: '', defaultLanguage: '' }) {
   replaceLastInputPhrase(`${data.matchedName} `);
 }
 
+function onGlitch(params = { run: 'stop' }) {
+  const run = params.run;
+
+  switch (run) {
+    case 'start': {
+      const text = labels.getText('incantations', 'hellGate');
+
+      mainFeed.classList.add('glitch');
+      document.body.classList.add('darken');
+
+      setTimeout(() => {
+        for (let i = 0; i < text.length; i++) {
+          const row = text[i];
+
+          queueMessage({
+            text: [zalgoGenerator.randomMultiZalgoPhrase({ phrase: row })],
+            extraClass: 'hellgate',
+            msgAnimation: {
+              instantAnimation: true,
+            },
+            timeout: i + 1 === text.length ? 10000 : 4000,
+          });
+        }
+        setTimeout(
+          () => { socket.emit('glitch', { run: 'stop' }); },
+          5000 + (4000 * text.length)
+        );
+        queueMessage({
+          text: labels.getText('stateMessages', 'noHellGate'),
+          timeout: 2000,
+        });
+      }, 4000);
+
+      break;
+    }
+    case 'stop':
+      mainFeed.classList.remove('glitch');
+      document.body.classList.remove('darken');
+
+      break;
+    default:
+      break;
+  }
+}
+
 /**
  * Called from server on client connection
  * Sets configuration properties from server and starts the rest of the app
@@ -4100,6 +4144,7 @@ function startSocket() {
     socket.on('list', onList);
     socket.on('matchFound', onMatchFound);
     socket.on('startup', onStartup);
+    socket.on('glitch', onGlitch);
     // socket.on('missions', onMissions);
   }
 }
