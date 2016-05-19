@@ -2172,9 +2172,7 @@ function attachCommands() {
     category: 'basic',
   };
   commands.mode = {
-    func: function modeCommand(phrases, verbose) {
-      let commandString;
-
+    func: function modeCommand(phrases) {
       if (phrases.length > 0) {
         const newMode = phrases[0].toLowerCase();
 
