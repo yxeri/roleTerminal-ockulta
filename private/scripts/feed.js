@@ -2906,7 +2906,7 @@ function attachCommands() {
       const data = {
         message: {
           text: origin && origin === 'staten' ? ['- VIKTIGT MEDDELANDE TILL ALLA MEDBORGARE OCH MEDARBETARE -'] : [],
-          userName: getUser(),
+          userName: 'staten',
           hideName: true,
         },
       };
