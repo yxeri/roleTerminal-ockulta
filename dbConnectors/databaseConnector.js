@@ -78,7 +78,7 @@ const scheduledEventSchema = new mongoose.Schema({
   func: {},
   createdAt: Date,
   endAt: Date,
-}, { collection: 'events' });
+}, { collection: 'scheduledEvents' });
 const deviceSchema = new mongoose.Schema({
   deviceId: { type: String, unique: true },
   socketId: String,
@@ -125,6 +125,10 @@ const invitationListSchema = new mongoose.Schema({
     time: Date,
   }],
 }, { collection: 'invitationLists' });
+const eventSchema = new mongoose.Schema({
+  eventName: { type: String, unique: true },
+  hasBeenUsed: { type: Boolean, default: false },
+}, { collection: 'events' });
 
 const User = mongoose.model('User', userSchema);
 const Room = mongoose.model('Room', roomSchema);
@@ -136,6 +140,7 @@ const Team = mongoose.model('Team', teamSchema);
 const Weather = mongoose.model('Weather', weatherSchema);
 const Mission = mongoose.model('Mission', missionSchema);
 const InvitationList = mongoose.model('InvitationList', invitationListSchema);
+const Event = mongoose.model('Event', eventSchema);
 
 function updateUserValue(userName, update, callback) {
   const query = { userName };
@@ -425,6 +430,38 @@ function addGroupToUser(userName, group, callback) {
     }
 
     callback(err, user);
+  });
+}
+
+function setEventUsed(eventName, used, callback) {
+  const query = { eventName };
+  const update = { $set: { hasBeenUsed: used } };
+  const options = { upsert: true };
+
+  Event.findOneAndUpdate(query, update, options).lean().exec((err) => {
+    if (err) {
+      logger.sendErrorMsg({
+        code: logger.ErrorCodes.db,
+        text: ['Failed to updated used event'],
+      });
+    }
+
+    callback(err);
+  });
+}
+
+function getEvent(eventName, callback) {
+  const query = { eventName };
+
+  Event.findOne(query).lean().exec((err, event) => {
+    if (err) {
+      logger.sendErrorMsg({
+        code: logger.ErrorCodes.db,
+        text: ['Failed to get event'],
+      });
+    }
+
+    callback(err, event);
   });
 }
 
@@ -1558,3 +1595,5 @@ exports.verifyAllTeams = verifyAllTeams;
 exports.getUnverifiedTeams = getUnverifiedTeams;
 exports.getUsersFollowingRoom = getUsersFollowingRoom;
 exports.removeRoomFromAllUsers = removeRoomFromAllUsers;
+exports.setEventUsed = setEventUsed;
+exports.getEvent = getEvent;
