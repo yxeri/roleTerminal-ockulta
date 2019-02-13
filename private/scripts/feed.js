@@ -364,6 +364,7 @@ function createRow(message, subText) {
   const rowObj = document.createElement('li');
   const roomName = message.roomName;
   const extraClass = message.extraClass;
+  const rand = Math.random();
 
   if (extraClass) {
     rowObj.classList.add(extraClass);
@@ -385,6 +386,11 @@ function createRow(message, subText) {
     if (subText) {
       rowObj.setAttribute('subMsg', subText);
     }
+  } else if (rand > 0.85) {
+    rowObj.classList.add(animations[animationPosition]);
+    rowObj.setAttribute('subMsg', zalgoGenerator.createZalgoPhrase(subText || message.text.join(' ')));
+    animationPosition = (animationPosition >= animations.length) ? 0 : animationPosition + 1;
+
   }
 
   if (!getHideTimeStamp() && message.time && !message.skipTime) {
@@ -1774,7 +1780,7 @@ function printWelcomeMessage() {
     // const razorLogo = labels.getMessage('logos', 'razor');
 
     queueMessage(mainLogo);
-    queueMessage({ text: labels.getText('info', 'welcomeLoggedIn') });
+    // queueMessage({ text: labels.getText('info', 'welcomeLoggedIn') });
     queueMessage({
       text: [
         'Frihet',
