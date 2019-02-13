@@ -1807,7 +1807,7 @@ function printStartMessage() {
     //   text: labels.retrieveMessage(appendLanguage('info'), 'establishConnection'),
     //   extraClass: 'upperCase',
     // });
-    queueMessage({ text: labels.getText('info', 'welcome') });
+    // queueMessage({ text: labels.getText('info', 'welcome') });
     queueMessage({
       text: [
         'Frihet',
