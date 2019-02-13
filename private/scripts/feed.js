@@ -2,7 +2,6 @@
 
 const labels = require('./labels');
 const textTools = require('./textTools');
-const audio = require('./audio');
 const zalgoGenerator = require('./zalgoGenerator');
 
 /**
@@ -390,7 +389,6 @@ function createRow(message, subText) {
     rowObj.classList.add(animations[animationPosition]);
     rowObj.setAttribute('subMsg', zalgoGenerator.createZalgoPhrase(subText || message.text.join(' ')));
     animationPosition = (animationPosition >= animations.length) ? 0 : animationPosition + 1;
-
   }
 
   if (!getHideTimeStamp() && message.time && !message.skipTime) {
