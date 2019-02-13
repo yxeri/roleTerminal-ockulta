@@ -767,7 +767,7 @@ const all = {
     noTracking: [
       'Unable to connect to the tracking satellites',
       'Turning off tracking is a major offense',
-      'Organica Re-Education Squads have been sent to scour the area',
+      // 'Organica Re-Education Squads have been sent to scour the area',
     ],
     failedRoom: [
       'Failed to create room',
@@ -787,7 +787,7 @@ const all = {
     noTracking: [
       'Misslyckades med att koppla upp mot spårningsatelliterna',
       'Att slå av spårningsfunktionen är en grov förseelse',
-      'Organica omskolningsstyrkor har blivit skickade till området',
+      // 'Organica omskolningsstyrkor har blivit skickade till området',
     ],
     failedRoom: [
       'Misslyckades att skapa rummet',
@@ -818,7 +818,7 @@ const all = {
     ],
     razorHacked: ['## This terminal has been cracked by your friendly Razor team. Enjoy! ##'],
     welcome: [
-      'Welcome to the Oracle of Organica',
+      // 'Welcome to the Oracle of Organica',
       'Please login to start your productive day!',
       'Did you know that you can auto-complete commands by using the tab button or writing double spaces?',
       'You can also retrieve instructions if you use the tab button or type double space without any other input',
@@ -838,7 +838,7 @@ const all = {
     ],
     congratulations: [
       `Congratulations, employee #${employeeNumber}`,
-      'Welcome to the Organica Oracle department',
+      // 'Welcome to the Organica Oracle department',
     ],
     establishConnection: [
       textTools.createFullLine(),
@@ -890,8 +890,8 @@ const all = {
     hiddenBottomMenuOff: ['Bottom menu is now visible'],
     youHaveBeenBanned: [
       'You have been banned from the system',
-      'Contact your nearest Organica IT Support Center for re-education',
-      '## or your nearest friendly Razor member. Bring a huge bribe ##',
+      // 'Contact your nearest Organica IT Support Center for re-education',
+      // '## or your nearest friendly Razor member. Bring a huge bribe ##',
     ],
     lostConnection: ['[ Lost connection ]'],
     hiddenCmdInputOn: ['Command input is now hidden'],
@@ -981,8 +981,8 @@ const all = {
     hiddenBottomMenuOff: ['Undermenyn är nu synlig'],
     youHaveBeenBanned: [
       'Ni har blivit bannade från systemet',
-      'Kontakta ert närmaste Organica IT-supportcenter för omskolning',
-      '## eller er närmaste vänliga Razor-medlem. Ta med en stor mängd mutor ##',
+      // 'Kontakta ert närmaste Organica IT-supportcenter för omskolning',
+      // '## eller er närmaste vänliga Razor-medlem. Ta med en stor mängd mutor ##',
     ],
     lostConnection: ['[ Förlorat anslutningen ]'],
     hiddenCmdInputOn: ['Kommandoraden är nu dold'],
